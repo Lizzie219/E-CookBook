@@ -12,8 +12,15 @@ namespace E_CookBook.Data
         public TastyDbContext (DbContextOptions<TastyDbContext> options)
             : base(options)
         {
+            
         }
 
         public DbSet<E_CookBook.Models.Ingredient> Ingredient { get; set; } = default!;
+        public DbSet<E_CookBook.Models.Category> Category { get; set; } = default!;
+        public DbSet<E_CookBook.Models.PriceCategory> PriceCategory { get; set; } = default!;
+        public DbSet<E_CookBook.Models.QuantityMetric> QuantityMetric { get; set; } = default!;
+        public DbSet<E_CookBook.Models.Tag> Tag { get; set; } = default!;
+
+
     }
 }
