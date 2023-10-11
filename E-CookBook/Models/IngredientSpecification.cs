@@ -8,7 +8,7 @@ namespace E_CookBook.Models
         public int ID { get; set; }
 
         [Display(Name="Quantity")]
-        public int Qunatity { get; set; }
+        public double Quantity { get; set; }
 
         public int IngredientID { get; set; }
         [ForeignKey("IngredientID")]

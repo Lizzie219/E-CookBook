@@ -7,7 +7,7 @@ namespace E_CookBook.Models
     {
         public int ID { get; set; }
 
-        [Display(Name="Recipe")]
+        [Display(Name="Name")]
         public string? Name { get; set; }
 
         [Display(Name = "Photo Location")]

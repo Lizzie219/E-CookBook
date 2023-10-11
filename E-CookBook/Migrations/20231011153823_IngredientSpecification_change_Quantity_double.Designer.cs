@@ -3,6 +3,7 @@ using E_CookBook.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_CookBook.Migrations
 {
     [DbContext(typeof(TastyDbContext))]
-    partial class TastyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231011153823_IngredientSpecification_change_Quantity_double")]
+    partial class IngredientSpecification_change_Quantity_double
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
