@@ -14,10 +14,10 @@ namespace E_CookBook.Models
         public string? PhotoLocation { get; set; }
 
         [Display(Name = "Cooking Time")]
-        public int CookingTime { get; set; }
+        public int? CookingTime { get; set; }
 
         [Display(Name = "Portion")]
-        public int Portion { get; set; }
+        public int? Portion { get; set; }
 
         [Display(Name = "Instructions")]
         public string? Instructions { get; set; }
@@ -27,7 +27,8 @@ namespace E_CookBook.Models
 
         public virtual ICollection<IngredientSpecification> Ingredients { get; set; }
 
-        public virtual ICollection<RecipeTag> Tags { get; set; }
+        [Display(Name = "Tags")]
+        public string? Tags { get; set; }
 
         public int CategoryID { get; set; }
         [ForeignKey("CategoryID")]
@@ -40,7 +41,6 @@ namespace E_CookBook.Models
         public Recipe()
         {
             Ingredients = new HashSet<IngredientSpecification>();
-            Tags = new HashSet<RecipeTag>();
         }
     }
 }

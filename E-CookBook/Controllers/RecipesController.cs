@@ -49,8 +49,8 @@ namespace E_CookBook.Controllers
         // GET: Recipes/Create
         public IActionResult Create()
         {
-            ViewData["CategoryID"] = new SelectList(_context.Category, "ID", "ID");
-            ViewData["PriceCategoryID"] = new SelectList(_context.PriceCategory, "ID", "ID");
+
+            ViewData["PriceCategoryID"] = new SelectList(_context.PriceCategory, "ID", "Name");
             return View();
         }
 
@@ -59,7 +59,7 @@ namespace E_CookBook.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,Name,PhotoLocation,CookingTime,Portion,Instructions,Source,CategoryID,PriceCategoryID")] Recipe recipe)
+        public async Task<IActionResult> Create([Bind("ID,Name,PhotoLocation,CookingTime,Portion,Instructions,Source,Tags,CategoryID,PriceCategoryID")] Recipe recipe)
         {
             if (ModelState.IsValid)
             {
@@ -95,7 +95,7 @@ namespace E_CookBook.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,PhotoLocation,CookingTime,Portion,Instructions,Source,CategoryID,PriceCategoryID")] Recipe recipe)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,PhotoLocation,CookingTime,Portion,Instructions,Source,Tags,CategoryID,PriceCategoryID")] Recipe recipe)
         {
             if (id != recipe.ID)
             {

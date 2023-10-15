@@ -19,8 +19,6 @@ namespace E_CookBook.Data
         public DbSet<E_CookBook.Models.Category> Category { get; set; } = default!;
         public DbSet<E_CookBook.Models.PriceCategory> PriceCategory { get; set; } = default!;
         public DbSet<E_CookBook.Models.QuantityMetric> QuantityMetric { get; set; } = default!;
-        public DbSet<E_CookBook.Models.Tag> Tag { get; set; } = default!;
-        public DbSet<E_CookBook.Models.RecipeTag> RecipeTag { get; set; } = default!;
         public DbSet<E_CookBook.Models.IngredientSpecification> IngredientSpecification { get; set; } = default!;
         public DbSet<E_CookBook.Models.Recipe> Recipe { get; set; } = default!;
 
