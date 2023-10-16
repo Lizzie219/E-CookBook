@@ -49,8 +49,9 @@ namespace E_CookBook.Controllers
         // GET: Recipes/Create
         public IActionResult Create()
         {
+            ViewBag.Categories = new SelectList(_context.Category, "ID", "Name");
+            ViewBag.PriceCategories = new SelectList(_context.PriceCategory, "ID", "Name");
 
-            ViewData["PriceCategoryID"] = new SelectList(_context.PriceCategory, "ID", "Name");
             return View();
         }
 

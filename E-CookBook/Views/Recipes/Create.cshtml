@@ -44,17 +44,23 @@
             </div>
             <div class="form-group">
                 <label asp-for="Category.Name" class="control-label"></label>
-                <input asp-for="Category" class="form-control" />
-                <input asp-for="CategoryID" class="form-control" hidden/>
+                <select asp-for="CategoryID" class="form-control" asp-items="ViewBag.Categories">
+                    <option value="" disabled selected>Select an Option</option>
+                </select>
             </div>
             <div class="form-group">
                 <label asp-for="PriceCategory.Name" class="control-label"></label>
-                <select asp-for="PriceCategoryID" class="form-control" asp-items="ViewBag.PriceCategories"></select>
+                <select asp-for="PriceCategoryID" class="form-control" asp-items="ViewBag.PriceCategories">
+                    <option value="" disabled selected>Select an Option</option>
+                </select>
             </div>
             <div class="form-group">
                 <label asp-for="Tags" class="control-label"></label>
-                <input asp-for="Tags" class="form-control"/>
-                <span asp-validation-for="Tags" class="text-danger"></span>
+                <input asp-for="Tags" class="form-control"/>               
+            </div>
+            <div>
+                <ul class="tag-list" id="taglist"></ul>
+                <input type="text" class="tag-input" placeholder="Add a tag...">
             </div>
             <table id="ingredientsTable">
                 <tr>
@@ -63,14 +69,15 @@
                     <th>Metric</th>
                 </tr>
             </table>
-            <div class="form-group">
-                <button id="addIngrButton" onclick="addIngredientSpecification()">Add Ingredient</button>
-            </div>
+           
             <br />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
+        <div class="form-group">
+            <button id="addIngrButton" onclick="addIngredientSpecification()">Add Ingredient</button>
+        </div>
     </div>
 </div>
 
@@ -83,8 +90,25 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     }
+    
     <script>
         var ingredientCount = 0;
+        const tagInput = document.querySelector('.tag-input');
+        const tagList = document.querySelector('.tag-list');
+
+        tagInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && tagInput.value.trim()) {
+                addTag(tagInput.value.trim());
+                tagInput.value = '';
+            }
+        });
+
+        function addTag(text) {
+            const tag = document.createElement('li');
+            tag.innerText = text;
+            tag.className = 'tag';
+            tagList.appendChild(tag);
+        }
 
         function addIngredientSpecification() {
             ingredientCount++;
