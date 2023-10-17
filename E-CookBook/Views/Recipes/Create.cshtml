@@ -56,11 +56,8 @@
             </div>
             <div class="form-group">
                 <label asp-for="Tags" class="control-label"></label>
-                <input asp-for="Tags" class="form-control"/>               
-            </div>
-            <div>
+                <input asp-for="Tags" class="form-control" hidden/>
                 <ul class="tag-list" id="taglist"></ul>
-                <input type="text" class="tag-input" placeholder="Add a tag...">
             </div>
             <table id="ingredientsTable">
                 <tr>
@@ -69,12 +66,14 @@
                     <th>Metric</th>
                 </tr>
             </table>
-           
             <br />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
+        <div class="form-group">
+            <input type="text" class="tag-input" placeholder="Add a tag...">
+        </div>
         <div class="form-group">
             <button id="addIngrButton" onclick="addIngredientSpecification()">Add Ingredient</button>
         </div>
@@ -90,7 +89,7 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     }
-    
+
     <script>
         var ingredientCount = 0;
         const tagInput = document.querySelector('.tag-input');
@@ -108,6 +107,7 @@
             tag.innerText = text;
             tag.className = 'tag';
             tagList.appendChild(tag);
+            document.getElementById("Tags").value += (text + "|and|");
         }
 
         function addIngredientSpecification() {
