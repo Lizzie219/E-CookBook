@@ -60,16 +60,30 @@ namespace E_CookBook.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,Name,PhotoLocation,CookingTime,Portion,Instructions,Source,Tags,CategoryID,PriceCategoryID")] Recipe recipe)
+        public async Task<IActionResult> Create([Bind("ID,Name,CookingTime,Portion,Instructions,Source,Tags,CategoryID,PriceCategoryID")] Recipe recipe)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(recipe);
                 await _context.SaveChangesAsync();
+
+                #region Ingredients
+                if (!string.IsNullOrEmpty(Request.Form["IngredientCount"]))
+                {
+                    for (int i = 0; i < int.Parse(Request.Form["IngredientCount"]); i++)
+                    {
+
+                    }
+                }               
+                #endregion
+
+
+
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryID"] = new SelectList(_context.Category, "ID", "ID", recipe.CategoryID);
-            ViewData["PriceCategoryID"] = new SelectList(_context.PriceCategory, "ID", "ID", recipe.PriceCategoryID);
+            ViewBag.Categories = new SelectList(_context.Category, "ID", "Name");
+            ViewBag.PriceCategories = new SelectList(_context.PriceCategory, "ID", "Name");
             return View(recipe);
         }
 
@@ -86,8 +100,8 @@ namespace E_CookBook.Controllers
             {
                 return NotFound();
             }
-            ViewData["CategoryID"] = new SelectList(_context.Category, "ID", "ID", recipe.CategoryID);
-            ViewData["PriceCategoryID"] = new SelectList(_context.PriceCategory, "ID", "ID", recipe.PriceCategoryID);
+            ViewBag.Categories = new SelectList(_context.Category, "ID", "Name");
+            ViewBag.PriceCategories = new SelectList(_context.PriceCategory, "ID", "Name");
             return View(recipe);
         }
 
@@ -96,7 +110,7 @@ namespace E_CookBook.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,PhotoLocation,CookingTime,Portion,Instructions,Source,Tags,CategoryID,PriceCategoryID")] Recipe recipe)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,CookingTime,Portion,Instructions,Source,Tags,CategoryID,PriceCategoryID")] Recipe recipe)
         {
             if (id != recipe.ID)
             {
@@ -123,8 +137,8 @@ namespace E_CookBook.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryID"] = new SelectList(_context.Category, "ID", "ID", recipe.CategoryID);
-            ViewData["PriceCategoryID"] = new SelectList(_context.PriceCategory, "ID", "ID", recipe.PriceCategoryID);
+            ViewBag.Categories = new SelectList(_context.Category, "ID", "Name");
+            ViewBag.PriceCategories = new SelectList(_context.PriceCategory, "ID", "Name");
             return View(recipe);
         }
 
