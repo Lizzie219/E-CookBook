@@ -13,10 +13,14 @@ namespace E_CookBook.Controllers
     public class IngredientSpecificationsController : Controller
     {
         private readonly TastyDbContext _context;
+        private QuantityMetricsController quantityMetricsController;
+        private IngredientsController ingredientsController;
 
         public IngredientSpecificationsController(TastyDbContext context)
         {
             _context = context;
+            quantityMetricsController = new QuantityMetricsController(context);
+            ingredientsController = new IngredientsController(context);
         }
 
         // GET: IngredientSpecifications
@@ -73,6 +77,36 @@ namespace E_CookBook.Controllers
             ViewData["QuantityMetricID"] = new SelectList(_context.QuantityMetric, "ID", "ID", ingredientSpecification.QuantityMetricID);
             ViewData["RecipeID"] = new SelectList(_context.Recipe, "ID", "ID", ingredientSpecification.RecipeID);
             return View(ingredientSpecification);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task Create(int recipeID, double metric, string metricName, string ingredientName)
+        {
+            IngredientSpecification ingredientSpecification = new IngredientSpecification();
+            ingredientSpecification.RecipeID = recipeID;
+            ingredientSpecification.Quantity = metric;
+
+            #region Quantity Metric
+
+            // if the new metric is already in the database it will not be duplicated
+            await quantityMetricsController.Create(metricName);
+            ingredientSpecification.QuantityMetricID = quantityMetricsController.GetQuantityMetric(metricName);
+
+            #endregion
+            #region Ingredient
+
+            // if the new ingredient is already in the database it will not be duplicated
+            await ingredientsController.Create(ingredientName);
+            ingredientSpecification.IngredientID = ingredientsController.GetIngredient(ingredientName);
+
+            #endregion
+
+            if(!IngredientSpecificationExists(ingredientSpecification))
+            {
+                _context.IngredientSpecification.Add(ingredientSpecification);
+                await _context.SaveChangesAsync();
+            }
         }
 
         // GET: IngredientSpecifications/Edit/5
@@ -167,14 +201,22 @@ namespace E_CookBook.Controllers
             {
                 _context.IngredientSpecification.Remove(ingredientSpecification);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool IngredientSpecificationExists(int id)
         {
-          return (_context.IngredientSpecification?.Any(e => e.ID == id)).GetValueOrDefault();
+            return (_context.IngredientSpecification?.Any(e => e.ID == id)).GetValueOrDefault();
+        }
+
+        private bool IngredientSpecificationExists(IngredientSpecification ingredientSpecification)
+        {
+            return _context.IngredientSpecification.Where(i => i.RecipeID == ingredientSpecification.RecipeID &&
+                                                               i.IngredientID == ingredientSpecification.IngredientID &&
+                                                               double.Equals(i.Quantity, ingredientSpecification.Quantity) &&
+                                                               i.QuantityMetricID == ingredientSpecification.QuantityMetricID).FirstOrDefault() != null;
         }
     }
 }

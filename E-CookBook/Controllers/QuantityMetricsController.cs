@@ -67,6 +67,20 @@ namespace E_CookBook.Controllers
             return View(quantityMetric);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task Create(string metricName)
+        {
+            if (!QuantityMetricExists(metricName))
+            {
+                QuantityMetric metric = new QuantityMetric();
+                metric.Name = metricName;
+
+                _context.QuantityMetric.Add(metric);
+                await _context.SaveChangesAsync();
+            }
+        }
+
         // GET: QuantityMetrics/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -155,9 +169,18 @@ namespace E_CookBook.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public int GetQuantityMetric(string name)
+        {
+            return _context.QuantityMetric.Where(q => q.Name == name).Select(q => q.ID).FirstOrDefault();
+        }
+
         private bool QuantityMetricExists(int id)
         {
           return (_context.QuantityMetric?.Any(e => e.ID == id)).GetValueOrDefault();
+        }
+        private bool QuantityMetricExists(string name)
+        {
+            return (_context.QuantityMetric?.Any(e => e.Name == name)).GetValueOrDefault();
         }
     }
 }

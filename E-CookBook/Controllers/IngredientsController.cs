@@ -67,6 +67,20 @@ namespace E_CookBook.Controllers
             return View(ingredient);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task Create(string name)
+        {
+            if (!IngredientExists(name))
+            {
+                Ingredient ingredient = new Ingredient();
+                ingredient.Name = name;
+
+                _context.Ingredient.Add(ingredient);
+                await _context.SaveChangesAsync();
+            }
+        }
+
         // GET: Ingredients/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -155,9 +169,19 @@ namespace E_CookBook.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public int GetIngredient(string name)
+        {
+            return _context.Ingredient.Where(q => q.Name == name).Select(q => q.ID).FirstOrDefault();
+        }
+
         private bool IngredientExists(int id)
         {
           return (_context.Ingredient?.Any(e => e.ID == id)).GetValueOrDefault();
+        }
+
+        private bool IngredientExists(string name)
+        {
+            return (_context.Ingredient?.Any(e => e.Name == name)).GetValueOrDefault();
         }
     }
 }

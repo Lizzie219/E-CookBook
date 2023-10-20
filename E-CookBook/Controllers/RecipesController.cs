@@ -13,10 +13,12 @@ namespace E_CookBook.Controllers
     public class RecipesController : Controller
     {
         private readonly TastyDbContext _context;
+        private IngredientSpecificationsController ispecController;
 
         public RecipesController(TastyDbContext context)
         {
             _context = context;
+            ispecController = new IngredientSpecificationsController(_context);
         }
 
         // GET: Recipes
@@ -72,13 +74,22 @@ namespace E_CookBook.Controllers
                 {
                     for (int i = 0; i < int.Parse(Request.Form["IngredientCount"]); i++)
                     {
+                        double quantity = double.Parse(Request.Form["Metric_" + i]);
+                        string quantityName = Request.Form["MetricName_" + i];
+                        string name = Request.Form["IngredientName_" + i];
 
+                        if (!string.IsNullOrEmpty(Request.Form["Metric_" + i]) && !string.IsNullOrEmpty(Request.Form["MetricName_" + i]) && !string.IsNullOrEmpty(Request.Form["IngredientName_" + i]))
+                        {
+                            ispecController.Create(recipe.ID, double.Parse(Request.Form["Metric_" + i]), Request.Form["MetricName_" + i], Request.Form["IngredientName_" + i]);
+                        }
                     }
-                }               
+                }
                 #endregion
+                #region PhotoLocation
 
 
 
+                #endregion
 
                 return RedirectToAction(nameof(Index));
             }
@@ -176,14 +187,14 @@ namespace E_CookBook.Controllers
             {
                 _context.Recipe.Remove(recipe);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool RecipeExists(int id)
         {
-          return (_context.Recipe?.Any(e => e.ID == id)).GetValueOrDefault();
+            return (_context.Recipe?.Any(e => e.ID == id)).GetValueOrDefault();
         }
     }
 }
