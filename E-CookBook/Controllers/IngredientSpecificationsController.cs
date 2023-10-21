@@ -81,7 +81,7 @@ namespace E_CookBook.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task Create(int recipeID, double metric, string metricName, string ingredientName)
+        public void Create(int recipeID, double metric, string metricName, string ingredientName)
         {
             IngredientSpecification ingredientSpecification = new IngredientSpecification();
             ingredientSpecification.RecipeID = recipeID;
@@ -90,14 +90,14 @@ namespace E_CookBook.Controllers
             #region Quantity Metric
 
             // if the new metric is already in the database it will not be duplicated
-            await quantityMetricsController.Create(metricName);
+            quantityMetricsController.Create(metricName);
             ingredientSpecification.QuantityMetricID = quantityMetricsController.GetQuantityMetric(metricName);
 
             #endregion
             #region Ingredient
 
             // if the new ingredient is already in the database it will not be duplicated
-            await ingredientsController.Create(ingredientName);
+            ingredientsController.Create(ingredientName);
             ingredientSpecification.IngredientID = ingredientsController.GetIngredient(ingredientName);
 
             #endregion
@@ -105,7 +105,7 @@ namespace E_CookBook.Controllers
             if(!IngredientSpecificationExists(ingredientSpecification))
             {
                 _context.IngredientSpecification.Add(ingredientSpecification);
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
         }
 

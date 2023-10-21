@@ -69,7 +69,7 @@ namespace E_CookBook.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task Create(string metricName)
+        public void Create(string metricName)
         {
             if (!QuantityMetricExists(metricName))
             {
@@ -77,7 +77,7 @@ namespace E_CookBook.Controllers
                 metric.Name = metricName;
 
                 _context.QuantityMetric.Add(metric);
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
         }
 

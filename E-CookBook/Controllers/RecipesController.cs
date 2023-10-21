@@ -63,17 +63,17 @@ namespace E_CookBook.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,Name,CookingTime,Portion,Instructions,Source,Tags,CategoryID,PriceCategoryID")] Recipe recipe)
+        public IActionResult Create([Bind("ID,Name,CookingTime,Portion,Instructions,Source,Tags,CategoryID,PriceCategoryID")] Recipe recipe)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(recipe);
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
 
                 #region Ingredients
                 if (!string.IsNullOrEmpty(Request.Form["IngredientCount"]))
                 {
-                    for (int i = 0; i < int.Parse(Request.Form["IngredientCount"]); i++)
+                    for (int i = 1; i <= int.Parse(Request.Form["IngredientCount"]); i++)
                     {
                         double quantity = double.Parse(Request.Form["Metric_" + i]);
                         string quantityName = Request.Form["MetricName_" + i];

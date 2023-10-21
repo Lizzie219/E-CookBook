@@ -69,7 +69,7 @@ namespace E_CookBook.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task Create(string name)
+        public void Create(string name)
         {
             if (!IngredientExists(name))
             {
@@ -77,7 +77,7 @@ namespace E_CookBook.Controllers
                 ingredient.Name = name;
 
                 _context.Ingredient.Add(ingredient);
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
         }
 
