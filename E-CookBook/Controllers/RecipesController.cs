@@ -14,6 +14,7 @@ namespace E_CookBook.Controllers
     {
         private readonly TastyDbContext _context;
         private IngredientSpecificationsController ispecController;
+        private readonly string recipePicturesDir = Path.Combine(Directory.GetCurrentDirectory(), "RecipePictures");
 
         public RecipesController(TastyDbContext context)
         {
@@ -85,9 +86,8 @@ namespace E_CookBook.Controllers
                     }
                 }
                 #endregion
-                #region PhotoLocation
-
-
+                #region PhotoLocation                
+                
 
                 #endregion
 
