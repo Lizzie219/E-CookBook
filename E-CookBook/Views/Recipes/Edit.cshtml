@@ -67,7 +67,7 @@
             <table id="ingredientsTable">
                 <tr>
                     <th>Quantity</th>
-                    <th>Quantity Metric</th>
+                    <th>Metric</th>
                     <th>Name</th>
                 </tr>
             </table>
@@ -100,7 +100,7 @@
         const tagInput = document.querySelector('.tag-input');
         const tagList = document.querySelector('.tag-list');
 
-        window.onload(afterLoad());
+        window.onload(this, afterLoad());
 
         function afterLoad() {
             manageTags();

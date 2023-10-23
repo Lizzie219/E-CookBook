@@ -171,7 +171,8 @@ namespace E_CookBook.Controllers
 
         public int GetIngredient(string name)
         {
-            return _context.Ingredient.Where(q => q.Name == name).Select(q => q.ID).FirstOrDefault();
+            name.ToLowerInvariant();
+            return _context.Ingredient.Where(q => string.Equals(q.Name.ToLower(), name.ToLower())).Select(q => q.ID).FirstOrDefault();
         }
 
         private bool IngredientExists(int id)
@@ -181,7 +182,7 @@ namespace E_CookBook.Controllers
 
         private bool IngredientExists(string name)
         {
-            return (_context.Ingredient?.Any(e => e.Name == name)).GetValueOrDefault();
+            return (_context.Ingredient?.Any(e => string.Equals(e.Name.ToLower(), name.ToLower()))).GetValueOrDefault();
         }
     }
 }

@@ -63,9 +63,9 @@
             <input id="IngredientCount" name="IngredientCount" hidden />
             <table id="ingredientsTable">
                 <tr>
-                    <th>Name</th>
-                    <th>Quantity</th>
+                    <th>Quantiy</th>
                     <th>Metric</th>
+                    <th>Name</th>
                 </tr>
             </table>
             <br />
@@ -119,9 +119,9 @@
             var table = document.getElementById("ingredientsTable");
             var newRow = table.insertRow();
 
-            var nameCell = newRow.insertCell(0);
-            var metricCell = newRow.insertCell(1);
-            var metricNameCell = newRow.insertCell(2);
+            var metricCell = newRow.insertCell(0);
+            var metricNameCell = newRow.insertCell(1);
+            var nameCell = newRow.insertCell(2);
 
             var nameInput = document.createElement("input");
             nameInput.type = "text";

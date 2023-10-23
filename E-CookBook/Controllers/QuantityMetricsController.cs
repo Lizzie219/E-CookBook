@@ -171,7 +171,7 @@ namespace E_CookBook.Controllers
 
         public int GetQuantityMetric(string name)
         {
-            return _context.QuantityMetric.Where(q => q.Name == name).Select(q => q.ID).FirstOrDefault();
+            return _context.QuantityMetric.Where(q => string.Equals(q.Name.ToLower(), name.ToLower())).Select(q => q.ID).FirstOrDefault();
         }
 
         private bool QuantityMetricExists(int id)
@@ -180,7 +180,7 @@ namespace E_CookBook.Controllers
         }
         private bool QuantityMetricExists(string name)
         {
-            return (_context.QuantityMetric?.Any(e => e.Name == name)).GetValueOrDefault();
+            return (_context.QuantityMetric?.Any(e => string.Equals(e.Name.ToLower(), name.ToLower()))).GetValueOrDefault();
         }
     }
 }

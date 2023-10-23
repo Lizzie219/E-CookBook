@@ -75,7 +75,7 @@ namespace E_CookBook.Controllers
                 if (!string.IsNullOrEmpty(Request.Form["IngredientCount"]))
                 {
                     for (int i = 1; i <= int.Parse(Request.Form["IngredientCount"]); i++)
-                    {                      
+                    {
                         if (!string.IsNullOrEmpty(Request.Form["Metric_" + i]) && !string.IsNullOrEmpty(Request.Form["MetricName_" + i]) && !string.IsNullOrEmpty(Request.Form["IngredientName_" + i]))
                         {
                             ispecController.Create(recipe.ID, double.Parse(Request.Form["Metric_" + i]), Request.Form["MetricName_" + i], Request.Form["IngredientName_" + i]);
@@ -84,7 +84,7 @@ namespace E_CookBook.Controllers
                 }
                 #endregion
                 #region PhotoLocation                
-                
+
 
                 #endregion
 
@@ -139,6 +139,19 @@ namespace E_CookBook.Controllers
             {
                 try
                 {
+                    #region Tags
+                    // tags get duplicated in the Edit process, so in the following only the distinct tags are saved
+                    if (!string.IsNullOrEmpty(recipe.Tags))
+                    {
+                        List<string> tags = recipe.Tags.Split("|and|").SkipLast(1).Distinct().ToList();
+                        recipe.Tags = "";
+                        foreach (var item in tags)
+                        {
+                            recipe.Tags += item + "|and|";
+                        }
+                    }
+                    #endregion
+
                     _context.Update(recipe);
                     _context.SaveChanges();
 
@@ -158,7 +171,6 @@ namespace E_CookBook.Controllers
 
 
                     #endregion
-
 
                 }
                 catch (DbUpdateConcurrencyException)
