@@ -74,11 +74,7 @@ namespace E_CookBook.Controllers
                 if (!string.IsNullOrEmpty(Request.Form["IngredientCount"]))
                 {
                     for (int i = 1; i <= int.Parse(Request.Form["IngredientCount"]); i++)
-                    {
-                        double quantity = double.Parse(Request.Form["Metric_" + i]);
-                        string quantityName = Request.Form["MetricName_" + i];
-                        string name = Request.Form["IngredientName_" + i];
-
+                    {                      
                         if (!string.IsNullOrEmpty(Request.Form["Metric_" + i]) && !string.IsNullOrEmpty(Request.Form["MetricName_" + i]) && !string.IsNullOrEmpty(Request.Form["IngredientName_" + i]))
                         {
                             ispecController.Create(recipe.ID, double.Parse(Request.Form["Metric_" + i]), Request.Form["MetricName_" + i], Request.Form["IngredientName_" + i]);
@@ -99,20 +95,21 @@ namespace E_CookBook.Controllers
         }
 
         // GET: Recipes/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int? id)
         {
             if (id == null || _context.Recipe == null)
             {
                 return NotFound();
             }
 
-            var recipe = await _context.Recipe.FindAsync(id);
+            var recipe = _context.Recipe.Find(id);
             if (recipe == null)
             {
                 return NotFound();
             }
             ViewBag.Categories = new SelectList(_context.Category, "ID", "Name");
             ViewBag.PriceCategories = new SelectList(_context.PriceCategory, "ID", "Name");
+            ViewBag.TagList = recipe.Tags != null ? recipe.Tags.Split("|and|").SkipLast(1).ToArray() : null;
             return View(recipe);
         }
 

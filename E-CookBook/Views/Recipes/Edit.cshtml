@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Edit";
+    string[] TagList = ViewBag.TagList;
 }
 
 <h1>Edit</h1>
@@ -19,9 +20,8 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PhotoLocation" class="control-label"></label>
-                <input asp-for="PhotoLocation" class="form-control" />
-                <span asp-validation-for="PhotoLocation" class="text-danger"></span>
+                <label class="control-label">Add a photo</label>
+                <input id="RecipePhoto" name="RecipePhoto" type="file" accept="image/jpeg, image/png, image/gif" class="form-control" onchange="validatePhoto(this)" value="@Model.PhotoLocation" />
             </div>
             <div class="form-group">
                 <label asp-for="CookingTime" class="control-label"></label>
@@ -35,7 +35,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Instructions" class="control-label"></label>
-                <input asp-for="Instructions" class="form-control" />
+                <textarea asp-for="Instructions" class="form-control"></textarea>
                 <span asp-validation-for="Instructions" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -44,19 +44,43 @@
                 <span asp-validation-for="Source" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CategoryID" class="control-label"></label>
-                <select asp-for="CategoryID" class="form-control" asp-items="ViewBag.CategoryID"></select>
+                <label asp-for="Category.Name" class="control-label"></label>
+                <select asp-for="CategoryID" class="form-control" asp-items="ViewBag.Categories">
+                    <option value="" disabled >Select an Option</option>
+                </select>
                 <span asp-validation-for="CategoryID" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PriceCategoryID" class="control-label"></label>
-                <select asp-for="PriceCategoryID" class="form-control" asp-items="ViewBag.PriceCategoryID"></select>
+                <label asp-for="PriceCategory.Name" class="control-label"></label>
+                <select asp-for="PriceCategoryID" class="form-control" asp-items="ViewBag.PriceCategories">
+                    <option value="" disabled >Select an Option</option>
+                </select>
                 <span asp-validation-for="PriceCategoryID" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="Tags" class="control-label"></label>
+                <input asp-for="Tags" class="form-control" hidden />
+                <ul class="tag-list" id="taglist"></ul>
+            </div>
+            <input id="IngredientCount" name="IngredientCount" hidden />
+            <table id="ingredientsTable">
+                <tr>
+                    <th>Name</th>
+                    <th>Quantity</th>
+                    <th>Metric</th>
+                </tr>
+            </table>
+            <br />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
+        <div class="form-group">
+            <input type="text" class="tag-input" placeholder="Add a tag...">
+        </div>
+        <div class="form-group">
+            <button id="addIngrButton" onclick="addIngredientSpecification()">Add Ingredient</button>
+        </div>
     </div>
 </div>
 
@@ -67,3 +91,85 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+<script>
+        var ingredientCount = 0;
+        const tagInput = document.querySelector('.tag-input');
+        const tagList = document.querySelector('.tag-list'); 
+
+        window.onload(afterLoad());
+
+        function afterLoad(){
+            manageTags()
+
+        }
+
+        tagInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && tagInput.value.trim()) {
+                addTag(tagInput.value.trim());
+                tagInput.value = '';
+            }
+        });
+
+        function manageTags()
+        {
+            var tags = @Html.Raw(JsonConvert.SerializeObject(TagList));
+            for(var i = 0; i < tags.length; i++)
+            {
+                addTag(tags[i]);
+            }
+        }
+
+        function addTag(text) {
+            const tag = document.createElement('li');
+            tag.innerText = text;
+            tag.className = 'tag';
+            tagList.appendChild(tag);
+            document.getElementById("Tags").value += (text + "|and|");
+        }
+
+        function addIngredientSpecification() {
+            ingredientCount++;
+            document.getElementById("IngredientCount").value = ingredientCount;
+
+            var table = document.getElementById("ingredientsTable");
+            var newRow = table.insertRow();
+
+            var nameCell = newRow.insertCell(0);
+            var metricCell = newRow.insertCell(1);
+            var metricNameCell = newRow.insertCell(2);
+
+            var nameInput = document.createElement("input");
+            nameInput.type = "text";
+            nameInput.name = "IngredientName_" + ingredientCount.toString();
+            nameInput.id = "IngredientName_" + ingredientCount.toString();
+
+            var metricInput = document.createElement("input");
+            metricInput.type = "number";
+            metricInput.name = "Metric_" + ingredientCount.toString();
+            metricInput.id = "Metric_" + ingredientCount.toString();
+
+            var metricNameInput = document.createElement("input");
+            metricNameInput.type = "text";
+            metricNameInput.name = "MetricName_" + ingredientCount.toString();
+            metricNameInput.id = "MetricName_" + ingredientCount.toString();
+
+            nameCell.appendChild(nameInput);
+            metricCell.appendChild(metricInput);
+            metricNameCell.appendChild(metricNameInput);
+        }
+
+        function validatePhoto(inputElement) {
+            const file = inputElement.files[0];
+            if (file) {
+                const fileType = file['type'];
+                const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
+                if (!validImageTypes.includes(fileType)) {
+                    alert('Please upload a valid image.');
+                    inputElement.value = '';  // Clear the input
+                }
+            }
+        }
+
+</script>
