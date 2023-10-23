@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using E_CookBook.Data;
+using E_CookBook.ViewModels;
 using E_CookBook.Models;
 
 namespace E_CookBook.Controllers
@@ -107,9 +108,18 @@ namespace E_CookBook.Controllers
             {
                 return NotFound();
             }
+
+            List<IngredientViewModel> ingredients = new List<IngredientViewModel>();
+            foreach (var ingredient in recipe.Ingredients)
+            {
+                ingredients.Add(new IngredientViewModel(ingredient.Quantity, ingredient.QuantityMetric.Name, ingredient.Ingredient.Name, ingredient.ID));
+            }
+
+            ViewBag.ExistingIngredients = ingredients;
             ViewBag.Categories = new SelectList(_context.Category, "ID", "Name");
             ViewBag.PriceCategories = new SelectList(_context.PriceCategory, "ID", "Name");
             ViewBag.TagList = recipe.Tags != null ? recipe.Tags.Split("|and|").SkipLast(1).ToArray() : null;
+
             return View(recipe);
         }
 
@@ -118,7 +128,7 @@ namespace E_CookBook.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,CookingTime,Portion,Instructions,Source,Tags,CategoryID,PriceCategoryID")] Recipe recipe)
+        public IActionResult Edit(int id, [Bind("ID,Name,CookingTime,Portion,Instructions,Source,Tags,CategoryID,PriceCategoryID")] Recipe recipe)
         {
             if (id != recipe.ID)
             {
@@ -130,7 +140,26 @@ namespace E_CookBook.Controllers
                 try
                 {
                     _context.Update(recipe);
-                    await _context.SaveChangesAsync();
+                    _context.SaveChanges();
+
+                    #region Ingredients
+                    if (!string.IsNullOrEmpty(Request.Form["IngredientCount"]))
+                    {
+                        for (int i = 1; i <= int.Parse(Request.Form["IngredientCount"]); i++)
+                        {
+                            if (!string.IsNullOrEmpty(Request.Form["Metric_" + i]) && !string.IsNullOrEmpty(Request.Form["MetricName_" + i]) && !string.IsNullOrEmpty(Request.Form["IngredientName_" + i]))
+                            {
+                                ispecController.Edit(int.Parse(Request.Form["SpecIDHidden_" + i]), double.Parse(Request.Form["Metric_" + i]), Request.Form["MetricName_" + i], Request.Form["IngredientName_" + i], recipe.ID);
+                            }
+                        }
+                    }
+                    #endregion
+                    #region PhotoLocation                
+
+
+                    #endregion
+
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -145,8 +174,19 @@ namespace E_CookBook.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
+            List<IngredientViewModel> ingredients = new List<IngredientViewModel>();
+            List<IngredientSpecification> ingredientsofCurrentRecipe = _context.IngredientSpecification.Where(s => s.RecipeID == id).ToList();
+            foreach (var ingredient in ingredientsofCurrentRecipe)
+            {
+                ingredients.Add(new IngredientViewModel(ingredient.Quantity, ingredient.QuantityMetric.Name, ingredient.Ingredient.Name, ingredient.ID));
+            }
+
+            ViewBag.ExistingIngredients = ingredients;
             ViewBag.Categories = new SelectList(_context.Category, "ID", "Name");
             ViewBag.PriceCategories = new SelectList(_context.PriceCategory, "ID", "Name");
+            ViewBag.TagList = recipe.Tags != null ? recipe.Tags.Split("|and|").SkipLast(1).ToArray() : null;
+
             return View(recipe);
         }
 

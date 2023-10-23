@@ -102,7 +102,7 @@ namespace E_CookBook.Controllers
 
             #endregion
 
-            if(!IngredientSpecificationExists(ingredientSpecification))
+            if (!IngredientSpecificationExists(ingredientSpecification))
             {
                 _context.IngredientSpecification.Add(ingredientSpecification);
                 _context.SaveChanges();
@@ -164,6 +164,36 @@ namespace E_CookBook.Controllers
             ViewData["QuantityMetricID"] = new SelectList(_context.QuantityMetric, "ID", "ID", ingredientSpecification.QuantityMetricID);
             ViewData["RecipeID"] = new SelectList(_context.Recipe, "ID", "ID", ingredientSpecification.RecipeID);
             return View(ingredientSpecification);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public void Edit(int id, double quantity, string quantityMetric, string ingredient, int recipeID)
+        {
+            if (id == -19)
+            {
+                Create(recipeID, quantity, quantityMetric, ingredient);
+            }
+            else if (IngredientSpecificationExists(id))
+            {
+                IngredientSpecification spec = _context.IngredientSpecification.Find(id);
+                spec.Quantity = quantity;
+
+                #region Quantity Metric
+                // if the metric is already in the database it will not be duplicated
+                quantityMetricsController.Create(quantityMetric);
+                spec.QuantityMetricID = quantityMetricsController.GetQuantityMetric(quantityMetric);
+                #endregion
+
+                #region Ingredient
+                // if the ingredient is already in the database it will not be duplicated
+                ingredientsController.Create(ingredient);
+                spec.IngredientID = ingredientsController.GetIngredient(ingredient);
+                #endregion
+
+                _context.Update(spec);
+                _context.SaveChanges();
+            } 
         }
 
         // GET: IngredientSpecifications/Delete/5

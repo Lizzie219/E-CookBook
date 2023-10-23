@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Edit";
     string[] TagList = ViewBag.TagList;
+    List<IngredientViewModel> existingIngredients = (List<IngredientViewModel>)ViewBag.ExistingIngredients;
 }
 
 <h1>Edit</h1>
@@ -46,14 +47,14 @@
             <div class="form-group">
                 <label asp-for="Category.Name" class="control-label"></label>
                 <select asp-for="CategoryID" class="form-control" asp-items="ViewBag.Categories">
-                    <option value="" disabled >Select an Option</option>
+                    <option value="" disabled>Select an Option</option>
                 </select>
                 <span asp-validation-for="CategoryID" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="PriceCategory.Name" class="control-label"></label>
                 <select asp-for="PriceCategoryID" class="form-control" asp-items="ViewBag.PriceCategories">
-                    <option value="" disabled >Select an Option</option>
+                    <option value="" disabled>Select an Option</option>
                 </select>
                 <span asp-validation-for="PriceCategoryID" class="text-danger"></span>
             </div>
@@ -65,9 +66,9 @@
             <input id="IngredientCount" name="IngredientCount" hidden />
             <table id="ingredientsTable">
                 <tr>
-                    <th>Name</th>
                     <th>Quantity</th>
-                    <th>Metric</th>
+                    <th>Quantity Metric</th>
+                    <th>Name</th>
                 </tr>
             </table>
             <br />
@@ -89,21 +90,24 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }
 
-<script>
+    <script>
         var ingredientCount = 0;
         const tagInput = document.querySelector('.tag-input');
-        const tagList = document.querySelector('.tag-list'); 
+        const tagList = document.querySelector('.tag-list');
 
         window.onload(afterLoad());
 
-        function afterLoad(){
-            manageTags()
-
+        function afterLoad() {
+            manageTags();
+            manageIngredients();
         }
-
+        
+        // #region Tags
         tagInput.addEventListener('keydown', function (e) {
             if (e.key === 'Enter' && tagInput.value.trim()) {
                 addTag(tagInput.value.trim());
@@ -111,12 +115,12 @@
             }
         });
 
-        function manageTags()
-        {
+        function manageTags() {
             var tags = @Html.Raw(JsonConvert.SerializeObject(TagList));
-            for(var i = 0; i < tags.length; i++)
-            {
-                addTag(tags[i]);
+            if (tags != null) {
+                for (var i = 0; i < tags.length; i++) {
+                    addTag(tags[i]);
+                }
             }
         }
 
@@ -128,6 +132,23 @@
             document.getElementById("Tags").value += (text + "|and|");
         }
 
+        // #endregion
+        // #region Ingredients
+        function manageIngredients(){
+            var existingIngredientsList = @Html.Raw(JsonConvert.SerializeObject(existingIngredients));
+            for(var i = 0; i < existingIngredientsList.length; i++){
+                addIngredientSpecification();
+                loadIngredientValues(existingIngredientsList[i]);
+            }
+        }
+
+        function loadIngredientValues(existingIngredient) {
+            document.getElementById("IngredientName_" + ingredientCount.toString()).value = existingIngredient.IngredientName;
+            document.getElementById("Metric_" + ingredientCount.toString()).value = existingIngredient.Metric;
+            document.getElementById("MetricName_" + ingredientCount.toString()).value = existingIngredient.MetricName;          
+            document.getElementById("SpecIDHidden_" + ingredientCount.toString()).value = existingIngredient.IngredientSpecificationID;
+        }
+
         function addIngredientSpecification() {
             ingredientCount++;
             document.getElementById("IngredientCount").value = ingredientCount;
@@ -135,29 +156,41 @@
             var table = document.getElementById("ingredientsTable");
             var newRow = table.insertRow();
 
-            var nameCell = newRow.insertCell(0);
-            var metricCell = newRow.insertCell(1);
-            var metricNameCell = newRow.insertCell(2);
+            var metricCell = newRow.insertCell(0);
+            var metricNameCell = newRow.insertCell(1);
+            var nameCell = newRow.insertCell(2);
 
-            var nameInput = document.createElement("input");
-            nameInput.type = "text";
-            nameInput.name = "IngredientName_" + ingredientCount.toString();
-            nameInput.id = "IngredientName_" + ingredientCount.toString();
-
+            // Quantity
             var metricInput = document.createElement("input");
             metricInput.type = "number";
             metricInput.name = "Metric_" + ingredientCount.toString();
             metricInput.id = "Metric_" + ingredientCount.toString();
 
+            // Quantity Metric
             var metricNameInput = document.createElement("input");
             metricNameInput.type = "text";
             metricNameInput.name = "MetricName_" + ingredientCount.toString();
-            metricNameInput.id = "MetricName_" + ingredientCount.toString();
+            metricNameInput.id = "MetricName_" + ingredientCount.toString();           
 
+            // Ingredient
+            var nameInput = document.createElement("input");
+            nameInput.type = "text";
+            nameInput.name = "IngredientName_" + ingredientCount.toString();
+            nameInput.id = "IngredientName_" + ingredientCount.toString();            
+
+            var specInputHidden = document.createElement("input");
+            specInputHidden.type = "hidden";
+            specInputHidden.name = "SpecIDHidden_" + ingredientCount.toString();
+            specInputHidden.id = "SpecIDHidden_" + ingredientCount.toString();
+            specInputHidden.value = "-19";   // default
+
+            // Add inputs to cells
             nameCell.appendChild(nameInput);
+            nameCell.appendChild(specInputHidden);
             metricCell.appendChild(metricInput);
             metricNameCell.appendChild(metricNameInput);
         }
+        // #endregion
 
         function validatePhoto(inputElement) {
             const file = inputElement.files[0];
@@ -172,4 +205,4 @@
             }
         }
 
-</script>
+    </script>
