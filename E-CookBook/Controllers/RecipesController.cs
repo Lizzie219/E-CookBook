@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using E_CookBook.Data;
 using E_CookBook.ViewModels;
 using E_CookBook.Models;
+using PagedList;
 
 namespace E_CookBook.Controllers
 {
@@ -24,10 +25,21 @@ namespace E_CookBook.Controllers
         }
 
         // GET: Recipes
-        public async Task<IActionResult> Index()
-        {
-            var tastyDbContext = _context.Recipe.Include(r => r.Category).Include(r => r.PriceCategory);
-            return View(await tastyDbContext.ToListAsync());
+        public IActionResult Index(string option, string searchParameter, int? pageNumber)
+        {  
+            if (option == "Title")
+            {
+                //Index action method will return a view with a student records based on what a user specify the value in textbox  
+                return View(_context.Recipe.Include(r => r.Category).Include(r => r.PriceCategory).Where(r => string.IsNullOrEmpty(searchParameter) || r.Name.ToLower().Contains(searchParameter.ToLower())).ToList().ToPagedList(pageNumber ?? 1, 3));
+            }
+            else /*if (option == "Ingredient")*/
+            {
+                return View(_context.Recipe.Include(r => r.Category).Include(r => r.PriceCategory).Where(r => string.IsNullOrEmpty(searchParameter) || ( r.Ingredients.Count > 0 && r.Ingredients.Any(i => i.Ingredient.Name.ToLower().Contains(searchParameter.ToLower())))).ToList().ToPagedList(pageNumber ?? 1, 3));
+            }
+            
+
+            //var tastyDbContext = _context.Recipe.Include(r => r.Category).Include(r => r.PriceCategory);
+            //return View(tastyDbContext.ToList());
         }
 
         // GET: Recipes/Details/5
@@ -68,6 +80,19 @@ namespace E_CookBook.Controllers
         {
             if (ModelState.IsValid)
             {
+                #region PhotoLocation                
+                if (Request.Form.Files.Count > 0)
+                {
+                    // Only one file will be uploaded
+                    recipe.PhotoLocation = Request.Form.Files[0].FileName;
+
+                    using (var fileStream = new FileStream(Path.Combine(recipePicturesDir, Request.Form.Files[0].FileName), FileMode.Create))
+                    {
+                        Request.Form.Files[0].CopyTo(fileStream);
+                    }
+                }
+                #endregion
+
                 _context.Add(recipe);
                 _context.SaveChanges();
 
@@ -83,11 +108,7 @@ namespace E_CookBook.Controllers
                     }
                 }
                 #endregion
-                #region PhotoLocation                
-
-
-                #endregion
-
+                
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.Categories = new SelectList(_context.Category, "ID", "Name");
@@ -118,7 +139,7 @@ namespace E_CookBook.Controllers
             ViewBag.ExistingIngredients = ingredients;
             ViewBag.Categories = new SelectList(_context.Category, "ID", "Name");
             ViewBag.PriceCategories = new SelectList(_context.PriceCategory, "ID", "Name");
-            ViewBag.TagList = recipe.Tags != null ? recipe.Tags.Split("|and|").SkipLast(1).ToArray() : null;
+            ViewBag.TagList = recipe.Tags != null ? recipe.Tags.Split("|and|", StringSplitOptions.RemoveEmptyEntries).ToArray() : null;
 
             return View(recipe);
         }
@@ -143,11 +164,23 @@ namespace E_CookBook.Controllers
                     // tags get duplicated in the Edit process, so in the following only the distinct tags are saved
                     if (!string.IsNullOrEmpty(recipe.Tags))
                     {
-                        List<string> tags = recipe.Tags.Split("|and|").SkipLast(1).Distinct().ToList();
+                        List<string> tags = recipe.Tags.Split("|and|", StringSplitOptions.RemoveEmptyEntries).Distinct().ToList();
                         recipe.Tags = "";
                         foreach (var item in tags)
                         {
                             recipe.Tags += item + "|and|";
+                        }
+                    }
+                    #endregion
+                    #region PhotoLocation                
+                    if (Request.Form.Files.Count > 0)
+                    {
+                        // Only one file will be uploaded
+                        recipe.PhotoLocation = Request.Form.Files[0].FileName;
+
+                        using (var fileStream = new FileStream(Path.Combine(recipePicturesDir, Request.Form.Files[0].FileName), FileMode.Create))
+                        {
+                            Request.Form.Files[0].CopyTo(fileStream);
                         }
                     }
                     #endregion
@@ -166,11 +199,7 @@ namespace E_CookBook.Controllers
                             }
                         }
                     }
-                    #endregion
-                    #region PhotoLocation                
-
-
-                    #endregion
+                    #endregion                   
 
                 }
                 catch (DbUpdateConcurrencyException)
@@ -197,7 +226,7 @@ namespace E_CookBook.Controllers
             ViewBag.ExistingIngredients = ingredients;
             ViewBag.Categories = new SelectList(_context.Category, "ID", "Name");
             ViewBag.PriceCategories = new SelectList(_context.PriceCategory, "ID", "Name");
-            ViewBag.TagList = recipe.Tags != null ? recipe.Tags.Split("|and|").SkipLast(1).ToArray() : null;
+            ViewBag.TagList = recipe.Tags != null ? recipe.Tags.Split("|and|", StringSplitOptions.RemoveEmptyEntries).ToArray() : null;
 
             return View(recipe);
         }

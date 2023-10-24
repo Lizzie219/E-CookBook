@@ -12,7 +12,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="ID" />
             <div class="form-group">
@@ -22,7 +22,7 @@
             </div>
             <div class="form-group">
                 <label class="control-label">Add a photo</label>
-                <input id="RecipePhoto" name="RecipePhoto" type="file" accept="image/jpeg, image/png, image/gif" class="form-control" onchange="validatePhoto(this)" value="@Model.PhotoLocation" />
+                <input id="RecipePhoto" name="RecipePhoto" type="file" accept="image/jpeg, image/png, image/gif" class="form-control" onchange="validatePhoto(this)" />
             </div>
             <div class="form-group">
                 <label asp-for="CookingTime" class="control-label"></label>
@@ -100,7 +100,7 @@
         const tagInput = document.querySelector('.tag-input');
         const tagList = document.querySelector('.tag-list');
 
-        window.onload(this, afterLoad());
+        document.loaded = afterLoad();
 
         function afterLoad() {
             manageTags();
