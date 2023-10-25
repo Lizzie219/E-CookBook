@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using E_CookBook.Data;
 using E_CookBook.ViewModels;
 using E_CookBook.Models;
-using PagedList;
+using X.PagedList;
 
 namespace E_CookBook.Controllers
 {
@@ -26,7 +26,10 @@ namespace E_CookBook.Controllers
 
         // GET: Recipes
         public IActionResult Index(string option, string searchParameter, int? pageNumber)
-        {  
+        {
+            ViewBag.Option = option;
+            ViewBag.SearchParameter = searchParameter;
+            ViewBag.Categories = new SelectList(_context.Category, "ID", "Name");
             if (option == "Title")
             {
                 //Index action method will return a view with a student records based on what a user specify the value in textbox  

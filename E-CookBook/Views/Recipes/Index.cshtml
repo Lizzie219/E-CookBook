@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Index";
+    string searchParameter = ViewBag.SearchParameter;
+    string option = ViewBag.Option;
 }
 
 <h1>Index</h1>
@@ -12,16 +14,33 @@
 <form asp-action="Index" method="get">
     <b> Search Option:</b>
     <div>
-        <input class="form-check-input" type="radio" name="option" id="flexRadioName" value="Title" checked />
-        <label class="form-check-label" for="flexRadioName">Recipe Title</label>
+        <input class="form-check-input" type="radio" asp-for="@option" value="Title" checked />
+        <label class="form-check-label">Recipe Title</label>
     </div>
     <div>
-        <input class="form-check-input" type="radio" name="option" value="Ingredient" id="flexRadioIngredient" />
-        <label class="form-check-label" for="flexRadioIngredient">Ingredient</label>
+        <input class="form-check-input" type="radio" asp-for="@option" value="Ingredient"/>
+        <label class="form-check-label">Ingredient</label>
     </div>
-    <input type="text" name="searchParameter" id="searchParameter" />
+    <input type="text" asp-for="@searchParameter" />
     <input type="submit" name="submit" value="Search" />
 </form>
+<br />
+<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filersDiv" aria-expanded="false" aria-controls="filersDiv">
+    Filters
+</button>
+<div class="collapse" id="filersDiv">
+    <div class="card card-body">
+        <div id="CategorySelect">
+            @foreach (var item in ViewBag.Categories)                                   
+            {
+                <a>
+                    <input type="checkbox" asp-for="@item" /> 
+                </a>
+                <label asp-for="@item"></label>
+            }
+        </div>
+    </div>
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -92,4 +111,18 @@
         }
     </tbody>
 </table>
-@Html.PagedListPager(Model,pageNumber => Url.Action("Index",new{ pageNumber}))
+<nav>
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { option = option,
+    searchParameter = searchParameter,  pageNumber = page }), new PagedListRenderOptions()
+    {
+    ActiveLiElementClass = "active",
+    PageClasses = new[]{ "page-link"},
+    LiElementClasses=new[] { "page-item" },
+    UlElementClasses = new[] { "pagination","justify-content-center", "mt-3" },
+    LinkToNextPageFormat = "Next",
+    LinkToPreviousPageFormat = "Previous",
+    MaximumPageNumbersToDisplay = 5,
+    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+    DisplayLinkToNextPage = PagedListDisplayMode.Always
+    })
+</nav>
