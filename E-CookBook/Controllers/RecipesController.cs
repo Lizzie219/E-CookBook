@@ -25,24 +25,55 @@ namespace E_CookBook.Controllers
         }
 
         // GET: Recipes
-        public IActionResult Index(string option, string searchParameter, int? pageNumber)
+        public IActionResult Index(string option, string searchParameter, int? pageNumber, string[] selectedCategories, string[] selectedPriceCategories, string[] selectedTags, int? selectedCookingTime)
         {
+            #region Viewbags
             ViewBag.Option = option;
             ViewBag.SearchParameter = searchParameter;
-            ViewBag.Categories = new SelectList(_context.Category, "ID", "Name");
+            ViewBag.Categories = _context.Category.Select(c => c.Name).ToList();
+            ViewBag.SelectedCategories = selectedCategories;
+            ViewBag.PriceCategories = _context.PriceCategory.Select(c => c.Name).ToList();
+            ViewBag.SelectedPriceCategories = selectedPriceCategories;
+            List<List<string>> tags = _context.Recipe.Where(r => !string.IsNullOrEmpty(r.Tags)).Select(r => r.Tags.Split("|and|", StringSplitOptions.RemoveEmptyEntries).ToList()).ToList();
+            List<string> distinctTags = new List<string>();
+            foreach (var item in tags)
+            {
+                foreach (var tag in item)
+                {
+                    distinctTags.Add(tag);
+                }
+            }
+            ViewBag.Tags = distinctTags.Distinct();
+            ViewBag.SelectedTags = selectedTags;
+            ViewBag.CookingTimeMax = _context.Recipe.Max(r => r.CookingTime);
+            ViewBag.SelectedCookingTime = selectedCookingTime;
+            #endregion
+            List<Recipe> recipes = _context.Recipe.Include(r => r.Category).Include(r => r.PriceCategory).ToList();
+            if(selectedCategories != null && selectedCategories.Length > 0)
+            {
+                recipes = recipes.Where(r => selectedCategories.Any(c => r.Category != null && c == r.Category.Name)).ToList();
+            }
+            if (selectedPriceCategories != null && selectedPriceCategories.Length > 0)
+            {
+                recipes = recipes.Where(r => selectedPriceCategories.Any(c => r.PriceCategory != null && c == r.PriceCategory.Name)).ToList();
+            }
+            if (selectedTags != null && selectedTags.Length > 0)
+            {
+                recipes = recipes.Where(r => selectedTags.Any(t => !string.IsNullOrEmpty(r.Tags) && r.Tags.Contains(t))).ToList();
+            }
+            if(selectedCookingTime != null)
+            {
+                recipes = recipes.Where(r => r.CookingTime <= selectedCookingTime).ToList();
+            }
+
             if (option == "Title")
             {
-                //Index action method will return a view with a student records based on what a user specify the value in textbox  
-                return View(_context.Recipe.Include(r => r.Category).Include(r => r.PriceCategory).Where(r => string.IsNullOrEmpty(searchParameter) || r.Name.ToLower().Contains(searchParameter.ToLower())).ToList().ToPagedList(pageNumber ?? 1, 3));
+                return View(recipes.Where(r => string.IsNullOrEmpty(searchParameter) || r.Name.ToLower().Contains(searchParameter.ToLower())).ToList().ToPagedList(pageNumber ?? 1, 3));
             }
             else /*if (option == "Ingredient")*/
             {
-                return View(_context.Recipe.Include(r => r.Category).Include(r => r.PriceCategory).Where(r => string.IsNullOrEmpty(searchParameter) || ( r.Ingredients.Count > 0 && r.Ingredients.Any(i => i.Ingredient.Name.ToLower().Contains(searchParameter.ToLower())))).ToList().ToPagedList(pageNumber ?? 1, 3));
-            }
-            
-
-            //var tastyDbContext = _context.Recipe.Include(r => r.Category).Include(r => r.PriceCategory);
-            //return View(tastyDbContext.ToList());
+                return View(recipes.Where(r => string.IsNullOrEmpty(searchParameter) || (r.Ingredients.Count > 0 && r.Ingredients.Any(i => i.Ingredient.Name.ToLower().Contains(searchParameter.ToLower())))).ToList().ToPagedList(pageNumber ?? 1, 3));
+            }           
         }
 
         // GET: Recipes/Details/5
@@ -111,7 +142,7 @@ namespace E_CookBook.Controllers
                     }
                 }
                 #endregion
-                
+
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.Categories = new SelectList(_context.Category, "ID", "Name");

@@ -4,6 +4,10 @@
     ViewData["Title"] = "Index";
     string searchParameter = ViewBag.SearchParameter;
     string option = ViewBag.Option;
+    string[] selectedCategories = ViewBag.SelectedCategories;
+    string[] selectedPriceCategories = ViewBag.SelectedPriceCategories;
+    string[] selectedTags = ViewBag.SelectedTags;
+    int? selectedCookingTime = ViewBag.SelectedCookingTime;
 }
 
 <h1>Index</h1>
@@ -18,29 +22,56 @@
         <label class="form-check-label">Recipe Title</label>
     </div>
     <div>
-        <input class="form-check-input" type="radio" asp-for="@option" value="Ingredient"/>
+        <input class="form-check-input" type="radio" asp-for="@option" value="Ingredient" />
         <label class="form-check-label">Ingredient</label>
     </div>
     <input type="text" asp-for="@searchParameter" />
     <input type="submit" name="submit" value="Search" />
-</form>
-<br />
-<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filersDiv" aria-expanded="false" aria-controls="filersDiv">
-    Filters
-</button>
-<div class="collapse" id="filersDiv">
-    <div class="card card-body">
-        <div id="CategorySelect">
-            @foreach (var item in ViewBag.Categories)                                   
-            {
-                <a>
-                    <input type="checkbox" asp-for="@item" /> 
-                </a>
-                <label asp-for="@item"></label>
-            }
+    <br />
+    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filersDiv" aria-expanded="false" aria-controls="filersDiv">
+        Filters
+    </button>
+    <div class="collapse" id="filersDiv">
+        <div class="card card-body">
+            <div id="CategorySelect">
+                <label>Categories</label>
+                @foreach (var item in ViewBag.Categories)
+                {
+                    <div>
+                        <input type="checkbox" name="selectedCategories" value="@item" id="@item" />
+                        <label for="@item">@item</label>
+                    </div>
+                }
+            </div>
+            <div id="PriceCategorySelect">
+                <label>Price Categories</label>
+                @foreach (var item in ViewBag.PriceCategories)
+                {
+                    <div>
+                        <input type="checkbox" name="selectedPriceCategories" value="@item" id="@item" />
+                        <label for="@item">@item</label>
+                    </div>
+                }
+            </div>
+            <div id="TagsSelect">
+                <label>Tags</label>
+                @foreach (var item in ViewBag.Tags)
+                {
+                    <div>
+                        <input type="checkbox" name="selectedTags" value="@item" id="@item" />
+                        <label for="@item">@item</label>
+                    </div>
+                }
+            </div>
+            <div id="CookingTimeSelect">
+                <label for="cookingTimeRange" class="form-label">Maximum Cooking Time</label>
+                <input type="range" class="form-range" min="1" max="@ViewBag.CookingTimeMax" id="cookingTimeRange" name="selectedCookingTime" value="@ViewBag.CookingTimeMax">
+                <label>Value: <span id="cookingTimeRangeValue"></span> minutes</label>
+            </div>
+            <input type="submit" name="submit" value="Filter" />
         </div>
     </div>
-</div>
+</form>
 <table class="table">
     <thead>
         <tr>
@@ -113,7 +144,7 @@
 </table>
 <nav>
     @Html.PagedListPager(Model, page => Url.Action("Index", new { option = option,
-    searchParameter = searchParameter,  pageNumber = page }), new PagedListRenderOptions()
+    searchParameter = searchParameter,  pageNumber = page, selectedCategories = selectedCategories, selectedPriceCategories = selectedPriceCategories, selectedTags = selectedTags, selectedCookingTime = selectedCookingTime }), new PagedListRenderOptions()
     {
     ActiveLiElementClass = "active",
     PageClasses = new[]{ "page-link"},
@@ -126,3 +157,13 @@
     DisplayLinkToNextPage = PagedListDisplayMode.Always
     })
 </nav>
+<script>
+    var slider = document.getElementById("cookingTimeRange");
+    var output = document.getElementById("cookingTimeRangeValue");
+    output.innerHTML = slider.value; // Display the default slider value
+
+    // Update the current slider value (each time you drag the slider handle)
+    slider.oninput = function () {
+        output.innerHTML = this.value;
+    }
+</script>
