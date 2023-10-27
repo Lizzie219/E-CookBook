@@ -46,7 +46,7 @@ namespace E_CookBook.Controllers
             ViewBag.Tags = distinctTags.Distinct();
             ViewBag.SelectedTags = selectedTags;
             ViewBag.CookingTimeMax = _context.Recipe.Max(r => r.CookingTime);
-            ViewBag.SelectedCookingTime = selectedCookingTime;
+            ViewBag.SelectedCookingTime = selectedCookingTime != null ? selectedCookingTime : ViewBag.CookingTimeMax;
             #endregion
             List<Recipe> recipes = _context.Recipe.Include(r => r.Category).Include(r => r.PriceCategory).ToList();
             if(selectedCategories != null && selectedCategories.Length > 0)
@@ -133,11 +133,13 @@ namespace E_CookBook.Controllers
                 #region Ingredients
                 if (!string.IsNullOrEmpty(Request.Form["IngredientCount"]))
                 {
+                    string section = "Default";
                     for (int i = 1; i <= int.Parse(Request.Form["IngredientCount"]); i++)
                     {
                         if (!string.IsNullOrEmpty(Request.Form["Metric_" + i]) && !string.IsNullOrEmpty(Request.Form["MetricName_" + i]) && !string.IsNullOrEmpty(Request.Form["IngredientName_" + i]))
                         {
-                            ispecController.Create(recipe.ID, double.Parse(Request.Form["Metric_" + i]), Request.Form["MetricName_" + i], Request.Form["IngredientName_" + i]);
+                            section = !string.IsNullOrEmpty(Request.Form["Section_" + i]) ? Request.Form["Section_" + i] : section;
+                            ispecController.Create(recipe.ID, double.Parse(Request.Form["Metric_" + i]), Request.Form["MetricName_" + i], Request.Form["IngredientName_" + i], section);
                         }
                     }
                 }
@@ -225,11 +227,13 @@ namespace E_CookBook.Controllers
                     #region Ingredients
                     if (!string.IsNullOrEmpty(Request.Form["IngredientCount"]))
                     {
+                        string section = "Default";
                         for (int i = 1; i <= int.Parse(Request.Form["IngredientCount"]); i++)
                         {
                             if (!string.IsNullOrEmpty(Request.Form["Metric_" + i]) && !string.IsNullOrEmpty(Request.Form["MetricName_" + i]) && !string.IsNullOrEmpty(Request.Form["IngredientName_" + i]))
                             {
-                                ispecController.Edit(int.Parse(Request.Form["SpecIDHidden_" + i]), double.Parse(Request.Form["Metric_" + i]), Request.Form["MetricName_" + i], Request.Form["IngredientName_" + i], recipe.ID);
+                                section = !string.IsNullOrEmpty(Request.Form["Section" + i]) ? Request.Form["Section" + i] : section;
+                                ispecController.Edit(int.Parse(Request.Form["SpecIDHidden_" + i]), double.Parse(Request.Form["Metric_" + i]), Request.Form["MetricName_" + i], Request.Form["IngredientName_" + i], recipe.ID, section);
                             }
                         }
                     }

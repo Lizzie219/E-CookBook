@@ -57,7 +57,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Tags" class="control-label"></label>
-                <input asp-for="Tags" class="form-control" hidden/>
+                <input asp-for="Tags" class="form-control" hidden />
                 <ul class="tag-list" id="taglist"></ul>
             </div>
             <input id="IngredientCount" name="IngredientCount" hidden />
@@ -67,17 +67,27 @@
                     <th>Metric</th>
                     <th>Name</th>
                 </tr>
+                <tr>
+                    <td colspan="3">
+                        <input type="text" id="Section_1" name="Section_1" disabled hidden />
+                    </td>
+                </tr>
             </table>
             <br />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
+        <br />
         <div class="form-group">
             <input type="text" class="tag-input" placeholder="Add a tag...">
         </div>
+        <br />
         <div class="form-group">
             <button id="addIngrButton" onclick="addIngredientSpecification()">Add Ingredient</button>
+        </div>
+        <div class="form-group">
+            <button id="addSectionButton" onclick="addNewSection()" disabled>Add New Section for Ingredients</button>
         </div>
     </div>
 </div>
@@ -141,10 +151,35 @@
             nameCell.appendChild(nameInput);
             metricCell.appendChild(metricInput);
             metricNameCell.appendChild(metricNameInput);
+
+            document.getElementById("addSectionButton").disabled = false;
         }
 
-        function validatePhoto(inputElement)
-        {
+        function addNewSection() {
+            // if addNewSection is called for the first time
+            if (document.getElementById("Section_1").hasAttribute('hidden')) {
+                var firstSection = document.getElementById("Section_1");
+                firstSection.disabled = false;
+                firstSection.hidden = false;
+                firstSection.value = "Default";                
+            }
+            var table = document.getElementById("ingredientsTable");
+            var newRow = table.insertRow();
+
+            var sectionCell = newRow.insertCell(0);
+            sectionCell.colSpan = 3;
+
+            var sectionInput = document.createElement("input");
+            sectionInput.type = "text";
+            sectionInput.name = "Section_" + (ingredientCount + 1).toString();       // number indicates the first ingredient in this section
+            sectionInput.id = "Section_" + (ingredientCount + 1).toString();
+
+            sectionCell.appendChild(sectionInput);
+
+            document.getElementById("addSectionButton").disabled = true;
+        }
+
+        function validatePhoto(inputElement) {
             const file = inputElement.files[0];
             if (file) {
                 const fileType = file['type'];

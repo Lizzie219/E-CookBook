@@ -65,7 +65,7 @@
             </div>
             <div id="CookingTimeSelect">
                 <label for="cookingTimeRange" class="form-label">Maximum Cooking Time</label>
-                <input type="range" class="form-range" min="1" max="@ViewBag.CookingTimeMax" id="cookingTimeRange" name="selectedCookingTime" value="@ViewBag.CookingTimeMax">
+                <input type="range" class="form-range" min="1" max="@ViewBag.CookingTimeMax" id="cookingTimeRange" name="selectedCookingTime">
                 <label>Value: <span id="cookingTimeRangeValue"></span> minutes</label>
             </div>
             <input type="submit" name="submit" value="Filter" />
@@ -158,12 +158,54 @@
     })
 </nav>
 <script>
-    var slider = document.getElementById("cookingTimeRange");
-    var output = document.getElementById("cookingTimeRangeValue");
-    output.innerHTML = slider.value; // Display the default slider value
+    var cookingSlider = document.getElementById("cookingTimeRange");
+    var currentSliderValueLabel = document.getElementById("cookingTimeRangeValue");
+    var textareaForDecode = document.createElement("textarea");
+    currentSliderValueLabel.innerHTML = cookingSlider.value; // Display the default slider value
+    document.loaded = afterLoad();
 
     // Update the current slider value (each time you drag the slider handle)
-    slider.oninput = function () {
-        output.innerHTML = this.value;
+    cookingSlider.oninput = function () {
+        currentSliderValueLabel.innerHTML = this.value;
     }
+
+    function afterLoad() {
+        //string[] selectedCategories = ViewBag.SelectedCategories;
+        //string[] selectedPriceCategories = ViewBag.SelectedPriceCategories;
+        //string[] selectedTags = ViewBag.SelectedTags;
+        // search
+        document.getElementById("searchParameter").value = decodeSpecialInput("@searchParameter");
+
+        // slider
+        cookingSlider.value = "@selectedCookingTime";
+        currentSliderValueLabel.innerHTML = cookingSlider.value;
+
+        // categories
+        var array = @Html.Raw(JsonConvert.SerializeObject(selectedCategories));
+        checkboxChecker(array);
+
+        // price categories
+        array = @Html.Raw(JsonConvert.SerializeObject(selectedPriceCategories));
+        checkboxChecker(array);
+
+        // tags
+        array = @Html.Raw(JsonConvert.SerializeObject(selectedTags));
+        checkboxChecker(array);
+    }
+
+    function checkboxChecker(array) {       
+        if (array != null) {
+            for (var i = 0; i < array.length; i++) {
+                document.getElementById(array[i]).checked = true;
+            }
+        }
+    }
+
+    // Special letters are not translated back from html to visible letters, this function makes sure that all letters are readable
+    function decodeSpecialInput(input) {
+        textareaForDecode.innerHTML = input;
+        return textareaForDecode.value;
+    }
+
+
 </script>

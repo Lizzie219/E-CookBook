@@ -10,6 +10,9 @@ namespace E_CookBook.Models
         [Display(Name="Quantity")]
         public double Quantity { get; set; }
 
+        [Display(Name = "Section")]
+        public string? Section { get; set; }
+
         public int IngredientID { get; set; }
         [ForeignKey("IngredientID")]
         public virtual Ingredient? Ingredient { get; set; }

@@ -81,11 +81,12 @@ namespace E_CookBook.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public void Create(int recipeID, double metric, string metricName, string ingredientName)
+        public void Create(int recipeID, double metric, string metricName, string ingredientName, string sectionName)
         {
             IngredientSpecification ingredientSpecification = new IngredientSpecification();
             ingredientSpecification.RecipeID = recipeID;
             ingredientSpecification.Quantity = metric;
+            ingredientSpecification.Section = sectionName;
 
             #region Quantity Metric
 
@@ -168,11 +169,11 @@ namespace E_CookBook.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public void Edit(int id, double quantity, string quantityMetric, string ingredient, int recipeID)
+        public void Edit(int id, double quantity, string quantityMetric, string ingredient, int recipeID, string section)
         {
             if (id == -19)
             {
-                Create(recipeID, quantity, quantityMetric, ingredient);
+                Create(recipeID, quantity, quantityMetric, ingredient, section);
             }
             else if (IngredientSpecificationExists(id))
             {
@@ -191,8 +192,11 @@ namespace E_CookBook.Controllers
                 spec.IngredientID = ingredientsController.GetIngredient(ingredient);
                 #endregion
 
-                _context.Update(spec);
-                _context.SaveChanges();
+                if (!IngredientSpecificationExists(spec))
+                {
+                    _context.Update(spec);
+                    _context.SaveChanges();
+                }
             } 
         }
 
@@ -246,7 +250,8 @@ namespace E_CookBook.Controllers
             return _context.IngredientSpecification.Where(i => i.RecipeID == ingredientSpecification.RecipeID &&
                                                                i.IngredientID == ingredientSpecification.IngredientID &&
                                                                double.Equals(i.Quantity, ingredientSpecification.Quantity) &&
-                                                               i.QuantityMetricID == ingredientSpecification.QuantityMetricID).FirstOrDefault() != null;
+                                                               i.QuantityMetricID == ingredientSpecification.QuantityMetricID &&
+                                                               string.Equals(i.Section, ingredientSpecification.Section)).FirstOrDefault() != null;
         }
     }
 }
