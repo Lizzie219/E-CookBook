@@ -114,6 +114,17 @@ namespace E_CookBook.Controllers
         {
             if (ModelState.IsValid)
             {
+                #region Tags              
+                if (!string.IsNullOrEmpty(recipe.Tags))
+                {
+                    List<string> tags = recipe.Tags.Split("|and|", StringSplitOptions.RemoveEmptyEntries).Distinct().ToList();
+                    recipe.Tags = "";
+                    foreach (var item in tags)
+                    {
+                        recipe.Tags += item + "|and|";
+                    }
+                }
+                #endregion
                 #region PhotoLocation                
                 if (Request.Form.Files.Count > 0)
                 {
@@ -136,9 +147,9 @@ namespace E_CookBook.Controllers
                     string section = "Default";
                     for (int i = 1; i <= int.Parse(Request.Form["IngredientCount"]); i++)
                     {
+                        section = !string.IsNullOrEmpty(Request.Form["Section_" + i]) ? Request.Form["Section_" + i] : section;
                         if (!string.IsNullOrEmpty(Request.Form["Metric_" + i]) && !string.IsNullOrEmpty(Request.Form["MetricName_" + i]) && !string.IsNullOrEmpty(Request.Form["IngredientName_" + i]))
-                        {
-                            section = !string.IsNullOrEmpty(Request.Form["Section_" + i]) ? Request.Form["Section_" + i] : section;
+                        {                           
                             ispecController.Create(recipe.ID, double.Parse(Request.Form["Metric_" + i]), Request.Form["MetricName_" + i], Request.Form["IngredientName_" + i], section);
                         }
                     }

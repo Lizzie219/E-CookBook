@@ -57,18 +57,21 @@
             </div>
             <div class="form-group">
                 <label asp-for="Tags" class="control-label"></label>
-                <input asp-for="Tags" class="form-control" hidden />
-                <ul class="tag-list" id="taglist"></ul>
+                <input asp-for="Tags" class="form-control" hidden />               
+                <div id="tagBadgeList">
+                </div>
             </div>
             <input id="IngredientCount" name="IngredientCount" hidden />
             <table id="ingredientsTable">
                 <tr>
+                    <th>Section</th>
                     <th>Quantiy</th>
                     <th>Metric</th>
                     <th>Name</th>
+                    <th></th>
                 </tr>
                 <tr>
-                    <td colspan="3">
+                    <td colspan="5">
                         <input type="text" id="Section_1" name="Section_1" disabled hidden />
                     </td>
                 </tr>
@@ -104,8 +107,7 @@
 
     <script>
         var ingredientCount = 0;
-        const tagInput = document.querySelector('.tag-input');
-        const tagList = document.querySelector('.tag-list');
+        const tagInput = document.querySelector('.tag-input');        
 
         tagInput.addEventListener('keydown', function (e) {
             if (e.key === 'Enter' && tagInput.value.trim()) {
@@ -113,12 +115,33 @@
                 tagInput.value = '';
             }
         });
+       
+        function addTag(text){
+            var tagBadge = document.createElement("span");
+            tagBadge.classList.add("badge");
+            tagBadge.classList.add("rounded-pill");
+            tagBadge.classList.add("text-bg-primary");
+            tagBadge.classList.add("badge-background-color");
+            tagBadge.innerText = text;
 
-        function addTag(text) {
-            const tag = document.createElement('li');
-            tag.innerText = text;
-            tag.className = 'tag';
-            tagList.appendChild(tag);
+            var deleteButton = document.createElement("button");
+            deleteButton.type = "button";
+            deleteButton.classList += "btn-close";
+            deleteButton.addEventListener('click', function () {
+                var badge = this.closest('.badge');
+                badge.parentNode.removeChild(badge);
+
+                var tagsInput = document.getElementById("Tags");
+                tagsInput.value = '';
+                var allTags = document.getElementById("tagBadgeList").getElementsByTagName("span");
+                for(var i = 0; i < allTags.length; i++)
+                {
+                    tagsInput.value += (allTags[i].textContent + "|and|");
+                }
+            });
+
+            tagBadge.appendChild(deleteButton);
+            document.getElementById("tagBadgeList").appendChild(tagBadge);
             document.getElementById("Tags").value += (text + "|and|");
         }
 
@@ -129,9 +152,11 @@
             var table = document.getElementById("ingredientsTable");
             var newRow = table.insertRow();
 
-            var metricCell = newRow.insertCell(0);
-            var metricNameCell = newRow.insertCell(1);
-            var nameCell = newRow.insertCell(2);
+            var nullCell = newRow.insertCell(0);
+            var metricCell = newRow.insertCell(1);
+            var metricNameCell = newRow.insertCell(2);
+            var nameCell = newRow.insertCell(3);
+            var deleteCell = newRow.insertCell(4);
 
             var nameInput = document.createElement("input");
             nameInput.type = "text";
@@ -148,11 +173,24 @@
             metricNameInput.name = "MetricName_" + ingredientCount.toString();
             metricNameInput.id = "MetricName_" + ingredientCount.toString();
 
+            var deleteButton = document.createElement("button");
+            deleteButton.type = "button";
+            deleteButton.classList += "btn-close";
+
             nameCell.appendChild(nameInput);
             metricCell.appendChild(metricInput);
             metricNameCell.appendChild(metricNameInput);
+            deleteCell.appendChild(deleteButton);
 
             document.getElementById("addSectionButton").disabled = false;
+
+            deleteButton.addEventListener('click', function () {
+                // Get the button's parent <td> element and then its parent <tr> element
+                var row = deleteButton.parentElement.parentElement;
+
+                // Remove the <tr> element (row) from the table
+                row.parentNode.removeChild(row);
+            });
         }
 
         function addNewSection() {
@@ -161,13 +199,13 @@
                 var firstSection = document.getElementById("Section_1");
                 firstSection.disabled = false;
                 firstSection.hidden = false;
-                firstSection.value = "Default";                
+                firstSection.value = "Default";
             }
             var table = document.getElementById("ingredientsTable");
             var newRow = table.insertRow();
 
             var sectionCell = newRow.insertCell(0);
-            sectionCell.colSpan = 3;
+            sectionCell.colSpan = 5;
 
             var sectionInput = document.createElement("input");
             sectionInput.type = "text";
