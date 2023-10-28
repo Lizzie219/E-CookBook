@@ -125,22 +125,22 @@ namespace E_CookBook.Controllers
                     }
                 }
                 #endregion
+
+                _context.Add(recipe);
+                _context.SaveChanges();
+
                 #region PhotoLocation                
                 if (Request.Form.Files.Count > 0)
                 {
                     // Only one file will be uploaded
-                    recipe.PhotoLocation = Request.Form.Files[0].FileName;
+                    recipe.PhotoLocation =  recipe.ID + "_" + Request.Form.Files[0].FileName;
 
-                    using (var fileStream = new FileStream(Path.Combine(recipePicturesDir, Request.Form.Files[0].FileName), FileMode.Create))
+                    using (var fileStream = new FileStream(Path.Combine(recipePicturesDir, recipe.PhotoLocation), FileMode.Create))
                     {
                         Request.Form.Files[0].CopyTo(fileStream);
                     }
                 }
                 #endregion
-
-                _context.Add(recipe);
-                _context.SaveChanges();
-
                 #region Ingredients
                 if (!string.IsNullOrEmpty(Request.Form["IngredientCount"]))
                 {
@@ -180,7 +180,7 @@ namespace E_CookBook.Controllers
             List<IngredientViewModel> ingredients = new List<IngredientViewModel>();
             foreach (var ingredient in recipe.Ingredients)
             {
-                ingredients.Add(new IngredientViewModel(ingredient.Quantity, ingredient.QuantityMetric.Name, ingredient.Ingredient.Name, ingredient.ID));
+                ingredients.Add(new IngredientViewModel(ingredient.Quantity, ingredient.QuantityMetric.Name, ingredient.Ingredient.Name, ingredient.ID, ingredient.Section));
             }
 
             ViewBag.ExistingIngredients = ingredients;
@@ -223,9 +223,9 @@ namespace E_CookBook.Controllers
                     if (Request.Form.Files.Count > 0)
                     {
                         // Only one file will be uploaded
-                        recipe.PhotoLocation = Request.Form.Files[0].FileName;
+                        recipe.PhotoLocation = id + "_" + Request.Form.Files[0].FileName;
 
-                        using (var fileStream = new FileStream(Path.Combine(recipePicturesDir, Request.Form.Files[0].FileName), FileMode.Create))
+                        using (var fileStream = new FileStream(Path.Combine(recipePicturesDir, recipe.PhotoLocation), FileMode.Create))
                         {
                             Request.Form.Files[0].CopyTo(fileStream);
                         }
@@ -269,7 +269,7 @@ namespace E_CookBook.Controllers
             List<IngredientSpecification> ingredientsofCurrentRecipe = _context.IngredientSpecification.Where(s => s.RecipeID == id).ToList();
             foreach (var ingredient in ingredientsofCurrentRecipe)
             {
-                ingredients.Add(new IngredientViewModel(ingredient.Quantity, ingredient.QuantityMetric.Name, ingredient.Ingredient.Name, ingredient.ID));
+                ingredients.Add(new IngredientViewModel(ingredient.Quantity, ingredient.QuantityMetric.Name, ingredient.Ingredient.Name, ingredient.ID, ingredient.Section));
             }
 
             ViewBag.ExistingIngredients = ingredients;

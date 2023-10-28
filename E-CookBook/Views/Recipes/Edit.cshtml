@@ -61,14 +61,22 @@
             <div class="form-group">
                 <label asp-for="Tags" class="control-label"></label>
                 <input asp-for="Tags" class="form-control" hidden />
-                <ul class="tag-list" id="taglist"></ul>
+                <div id="tagBadgeList">
+                </div>
             </div>
             <input id="IngredientCount" name="IngredientCount" hidden />
             <table id="ingredientsTable">
                 <tr>
-                    <th>Quantity</th>
+                    <th>Section</th>
+                    <th>Quantiy</th>
                     <th>Metric</th>
                     <th>Name</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        <input type="text" id="Section_1" name="Section_1" disabled hidden />
+                    </td>
                 </tr>
             </table>
             <br />
@@ -81,6 +89,9 @@
         </div>
         <div class="form-group">
             <button id="addIngrButton" onclick="addIngredientSpecification()">Add Ingredient</button>
+        </div>
+        <div class="form-group">
+            <button id="addSectionButton" onclick="addNewSection()" disabled>Add New Section for Ingredients</button>
         </div>
     </div>
 </div>
@@ -98,7 +109,6 @@
     <script>
         var ingredientCount = 0;
         const tagInput = document.querySelector('.tag-input');
-        const tagList = document.querySelector('.tag-list');
 
         document.loaded = afterLoad();
 
@@ -125,10 +135,30 @@
         }
 
         function addTag(text) {
-            const tag = document.createElement('li');
-            tag.innerText = text;
-            tag.className = 'tag';
-            tagList.appendChild(tag);
+            var tagBadge = document.createElement("span");
+            tagBadge.classList.add("badge");
+            tagBadge.classList.add("rounded-pill");
+            tagBadge.classList.add("text-bg-primary");
+            tagBadge.classList.add("badge-background-color");
+            tagBadge.innerText = text;
+
+            var deleteButton = document.createElement("button");
+            deleteButton.type = "button";
+            deleteButton.classList += "btn-close";
+            deleteButton.addEventListener('click', function () {
+                var badge = this.closest('.badge');
+                badge.parentNode.removeChild(badge);
+
+                var tagsInput = document.getElementById("Tags");
+                tagsInput.value = '';
+                var allTags = document.getElementById("tagBadgeList").getElementsByTagName("span");
+                for (var i = 0; i < allTags.length; i++) {
+                    tagsInput.value += (allTags[i].textContent + "|and|");
+                }
+            });
+
+            tagBadge.appendChild(deleteButton);
+            document.getElementById("tagBadgeList").appendChild(tagBadge);
             document.getElementById("Tags").value += (text + "|and|");
         }
 
@@ -147,6 +177,7 @@
             document.getElementById("Metric_" + ingredientCount.toString()).value = existingIngredient.Metric;
             document.getElementById("MetricName_" + ingredientCount.toString()).value = existingIngredient.MetricName;          
             document.getElementById("SpecIDHidden_" + ingredientCount.toString()).value = existingIngredient.IngredientSpecificationID;
+            document.getElementById("Section_" + ingredientCount.toString()).value = existingIngredient.Section;
         }
 
         function addIngredientSpecification() {
@@ -156,9 +187,11 @@
             var table = document.getElementById("ingredientsTable");
             var newRow = table.insertRow();
 
-            var metricCell = newRow.insertCell(0);
-            var metricNameCell = newRow.insertCell(1);
-            var nameCell = newRow.insertCell(2);
+            var nullCell = newRow.insertCell(0);
+            var metricCell = newRow.insertCell(1);
+            var metricNameCell = newRow.insertCell(2);
+            var nameCell = newRow.insertCell(3);
+            var deleteCell = newRow.insertCell(4);
 
             // Quantity
             var metricInput = document.createElement("input");
@@ -176,8 +209,15 @@
             var nameInput = document.createElement("input");
             nameInput.type = "text";
             nameInput.name = "IngredientName_" + ingredientCount.toString();
-            nameInput.id = "IngredientName_" + ingredientCount.toString();            
+            nameInput.id = "IngredientName_" + ingredientCount.toString();
+            nameInput.classlist.append("delete-helper");
 
+            // delete Button
+            var deleteButton = document.createElement("button");
+            deleteButton.type = "button";
+            deleteButton.classList += "btn-close";
+
+            // Ingredient Specification ID
             var specInputHidden = document.createElement("input");
             specInputHidden.type = "hidden";
             specInputHidden.name = "SpecIDHidden_" + ingredientCount.toString();
@@ -189,7 +229,24 @@
             nameCell.appendChild(specInputHidden);
             metricCell.appendChild(metricInput);
             metricNameCell.appendChild(metricNameInput);
+            deleteCell.appendChild(deleteButton);
+
+            document.getElementById("addSectionButton").disabled = false;
+
+            deleteButton.addEventListener('click', function () {
+                // hide the row, then delete the Ingredient Specification (if in database) on backend
+                var row = deleteButton.closest('tr');
+
+                var ingredientInput = row.querySelector('.delete-helper');
+                if (ingredientInput) {  
+                    ingredientInput.value = "DELETED";
+                }
+                
+                row.style.display = 'none';
+            });
         }
+
+
         // #endregion
 
         function validatePhoto(inputElement) {
