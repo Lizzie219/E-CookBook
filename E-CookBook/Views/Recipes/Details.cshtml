@@ -1,7 +1,9 @@
 ﻿@model E_CookBook.Models.Recipe
+@using E_CookBook.ViewModels;
 
 @{
     ViewData["Title"] = "Details";
+    List<IngredientViewModel> Ingredients = ViewBag.Ingredients;
 }
 
 <h1>Details</h1>
@@ -9,56 +11,72 @@
 <div>
     <h4>Recipe</h4>
     <hr />
+    @if (ViewBag.TagList != null)
+    {
+        @foreach (var item in ViewBag.TagList)
+        {
+            <span class="badge rounded-pill text-bg-primary badge-background-color">@item</span>
+        }
+    }
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Name)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Name)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PhotoLocation)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PhotoLocation)
-        </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.CookingTime)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.CookingTime)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Portion)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Portion)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Instructions)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Instructions)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Source)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Source)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Category.Name)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category.ID)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Category.Name)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PriceCategory)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.PriceCategory.Name)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PriceCategory.ID)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PriceCategory.Name)
         </dd>
     </dl>
+    <br />
+    <label>Ingredients</label>
+    <div class="row">
+        @foreach (var ingredientSpec in Ingredients)
+        {
+            <div class="col-sm-2">
+                <label>@ingredientSpec.Section</label>
+            </div>
+            <div class="col-sm-10">
+                <label>@ingredientSpec.Metric.ToString()</label>
+                <label>@(ingredientSpec.MetricName + "")</label>
+                <label>@ingredientSpec.IngredientName</label>
+            </div>
+        }
+    </div>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.ID">Edit</a> |

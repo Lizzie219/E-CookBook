@@ -49,7 +49,7 @@ namespace E_CookBook.Controllers
             ViewBag.SelectedCookingTime = selectedCookingTime != null ? selectedCookingTime : ViewBag.CookingTimeMax;
             #endregion
             List<Recipe> recipes = _context.Recipe.Include(r => r.Category).Include(r => r.PriceCategory).ToList();
-            if(selectedCategories != null && selectedCategories.Length > 0)
+            if (selectedCategories != null && selectedCategories.Length > 0)
             {
                 recipes = recipes.Where(r => selectedCategories.Any(c => r.Category != null && c == r.Category.Name)).ToList();
             }
@@ -61,7 +61,7 @@ namespace E_CookBook.Controllers
             {
                 recipes = recipes.Where(r => selectedTags.Any(t => !string.IsNullOrEmpty(r.Tags) && r.Tags.Contains(t))).ToList();
             }
-            if(selectedCookingTime != null)
+            if (selectedCookingTime != null)
             {
                 recipes = recipes.Where(r => r.CookingTime <= selectedCookingTime || r.CookingTime == null).ToList();
             }
@@ -73,7 +73,7 @@ namespace E_CookBook.Controllers
             else /*if (option == "Ingredient")*/
             {
                 return View(recipes.Where(r => string.IsNullOrEmpty(searchParameter) || (r.Ingredients.Count > 0 && r.Ingredients.Any(i => i.Ingredient.Name.ToLower().Contains(searchParameter.ToLower())))).ToList().ToPagedList(pageNumber ?? 1, 3));
-            }           
+            }
         }
 
         // GET: Recipes/Details/5
@@ -87,12 +87,30 @@ namespace E_CookBook.Controllers
             var recipe = await _context.Recipe
                 .Include(r => r.Category)
                 .Include(r => r.PriceCategory)
+                .Include(r => r.Ingredients)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (recipe == null)
             {
                 return NotFound();
             }
+            List<IngredientViewModel> ingredients = new List<IngredientViewModel>();
+            List<IngredientSpecification> ingredientsofCurrentRecipe = _context.IngredientSpecification.Where(s => s.RecipeID == id).ToList();
+            string section = "";
+            foreach (var ingredient in ingredientsofCurrentRecipe)
+            {
+                if (!string.IsNullOrEmpty(ingredient.Section) && section != ingredient.Section)
+                {
+                    section = ingredient.Section;
+                    ingredients.Add(new IngredientViewModel(ingredient.Quantity, ingredient.QuantityMetric.Name, ingredient.Ingredient.Name, ingredient.ID, section));
+                }
+                else
+                {
+                    ingredients.Add(new IngredientViewModel(ingredient.Quantity, ingredient.QuantityMetric.Name, ingredient.Ingredient.Name, ingredient.ID, ""));
+                }
+            }
 
+            ViewBag.Ingredients = ingredients;
+            ViewBag.TagList = recipe.Tags != null ? recipe.Tags.Split("|and|", StringSplitOptions.RemoveEmptyEntries).ToList() : null;
             return View(recipe);
         }
 
@@ -133,7 +151,7 @@ namespace E_CookBook.Controllers
                 if (Request.Form.Files.Count > 0)
                 {
                     // Only one file will be uploaded
-                    recipe.PhotoLocation =  recipe.ID + "_" + Request.Form.Files[0].FileName;
+                    recipe.PhotoLocation = recipe.ID + "_" + Request.Form.Files[0].FileName;
 
                     using (var fileStream = new FileStream(Path.Combine(recipePicturesDir, recipe.PhotoLocation), FileMode.Create))
                     {
@@ -149,7 +167,7 @@ namespace E_CookBook.Controllers
                     {
                         section = !string.IsNullOrEmpty(Request.Form["Section_" + i]) ? Request.Form["Section_" + i] : section;
                         if (!string.IsNullOrEmpty(Request.Form["Metric_" + i]) && !string.IsNullOrEmpty(Request.Form["MetricName_" + i]) && !string.IsNullOrEmpty(Request.Form["IngredientName_" + i]))
-                        {                           
+                        {
                             ispecController.Create(recipe.ID, double.Parse(Request.Form["Metric_" + i]), Request.Form["MetricName_" + i], Request.Form["IngredientName_" + i], section);
                         }
                     }
@@ -241,7 +259,7 @@ namespace E_CookBook.Controllers
                         string section = "";
                         for (int i = 1; i <= int.Parse(Request.Form["IngredientCount"]); i++)
                         {
-                            if(Request.Form["IngredientName_" + i] == "DELETED")
+                            if (Request.Form["IngredientName_" + i] == "DELETED")
                             {
                                 ispecController.Remove(int.Parse(Request.Form["SpecIDHidden_" + i]));
                             }
