@@ -63,7 +63,7 @@ namespace E_CookBook.Controllers
             }
             if(selectedCookingTime != null)
             {
-                recipes = recipes.Where(r => r.CookingTime <= selectedCookingTime).ToList();
+                recipes = recipes.Where(r => r.CookingTime <= selectedCookingTime || r.CookingTime == null).ToList();
             }
 
             if (option == "Title")
@@ -144,7 +144,7 @@ namespace E_CookBook.Controllers
                 #region Ingredients
                 if (!string.IsNullOrEmpty(Request.Form["IngredientCount"]))
                 {
-                    string section = "Default";
+                    string section = "";
                     for (int i = 1; i <= int.Parse(Request.Form["IngredientCount"]); i++)
                     {
                         section = !string.IsNullOrEmpty(Request.Form["Section_" + i]) ? Request.Form["Section_" + i] : section;
@@ -238,9 +238,13 @@ namespace E_CookBook.Controllers
                     #region Ingredients
                     if (!string.IsNullOrEmpty(Request.Form["IngredientCount"]))
                     {
-                        string section = "Default";
+                        string section = "";
                         for (int i = 1; i <= int.Parse(Request.Form["IngredientCount"]); i++)
                         {
+                            if(Request.Form["IngredientName_" + i] == "DELETED")
+                            {
+                                ispecController.Remove(int.Parse(Request.Form["SpecIDHidden_" + i]));
+                            }
                             if (!string.IsNullOrEmpty(Request.Form["Metric_" + i]) && !string.IsNullOrEmpty(Request.Form["MetricName_" + i]) && !string.IsNullOrEmpty(Request.Form["IngredientName_" + i]))
                             {
                                 section = !string.IsNullOrEmpty(Request.Form["Section" + i]) ? Request.Form["Section" + i] : section;

@@ -239,6 +239,23 @@ namespace E_CookBook.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+       
+        [ValidateAntiForgeryToken]
+        public IActionResult Remove(int id)
+        {
+            if (_context.IngredientSpecification == null)
+            {
+                return Problem("Entity set 'TastyDbContext.IngredientSpecification'  is null.");
+            }
+            var ingredientSpecification =  _context.IngredientSpecification.Find(id);
+            if (ingredientSpecification != null)
+            {
+                _context.IngredientSpecification.Remove(ingredientSpecification);
+            }
+
+            _context.SaveChanges();
+            return Ok();
+        }
 
         private bool IngredientSpecificationExists(int id)
         {

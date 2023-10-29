@@ -91,7 +91,7 @@
             <button id="addIngrButton" onclick="addIngredientSpecification()">Add Ingredient</button>
         </div>
         <div class="form-group">
-            <button id="addSectionButton" onclick="addNewSection()" disabled>Add New Section for Ingredients</button>
+            <button id="addSectionButton" onclick="addNewSection()">Add New Section for Ingredients</button>
         </div>
     </div>
 </div>
@@ -166,7 +166,12 @@
         // #region Ingredients
         function manageIngredients(){
             var existingIngredientsList = @Html.Raw(JsonConvert.SerializeObject(existingIngredients));
+            var section = "";
             for(var i = 0; i < existingIngredientsList.length; i++){
+                if (section != existingIngredientsList[i].Section && existingIngredientsList[i].Section != null) {
+                    section = existingIngredientsList[i].Section;
+                    addNewSection(section);
+                }
                 addIngredientSpecification();
                 loadIngredientValues(existingIngredientsList[i]);
             }
@@ -177,7 +182,6 @@
             document.getElementById("Metric_" + ingredientCount.toString()).value = existingIngredient.Metric;
             document.getElementById("MetricName_" + ingredientCount.toString()).value = existingIngredient.MetricName;          
             document.getElementById("SpecIDHidden_" + ingredientCount.toString()).value = existingIngredient.IngredientSpecificationID;
-            document.getElementById("Section_" + ingredientCount.toString()).value = existingIngredient.Section;
         }
 
         function addIngredientSpecification() {
@@ -210,7 +214,7 @@
             nameInput.type = "text";
             nameInput.name = "IngredientName_" + ingredientCount.toString();
             nameInput.id = "IngredientName_" + ingredientCount.toString();
-            nameInput.classlist.append("delete-helper");
+            nameInput.classList.add("delete-helper");
 
             // delete Button
             var deleteButton = document.createElement("button");
@@ -246,6 +250,32 @@
             });
         }
 
+        function addNewSection(text = "") {
+            // if addNewSection is called for the first time
+            if (document.getElementById("Section_1").hasAttribute('hidden')) {
+                var firstSection = document.getElementById("Section_1");
+                firstSection.disabled = false;
+                firstSection.hidden = false;
+                firstSection.value = text;
+            }
+            else {
+                var table = document.getElementById("ingredientsTable");
+                var newRow = table.insertRow();
+
+                var sectionCell = newRow.insertCell(0);
+                sectionCell.colSpan = 5;
+
+                var sectionInput = document.createElement("input");
+                sectionInput.type = "text";
+                sectionInput.name = "Section_" + (ingredientCount + 1).toString();       // number indicates the first ingredient in this section
+                sectionInput.id = "Section_" + (ingredientCount + 1).toString();
+                sectionInput.value = text;
+
+                sectionCell.appendChild(sectionInput);
+
+            }
+            document.getElementById("addSectionButton").disabled = true;
+        }
 
         // #endregion
 
