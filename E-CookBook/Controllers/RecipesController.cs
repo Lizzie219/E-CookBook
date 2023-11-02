@@ -9,6 +9,8 @@ using E_CookBook.Data;
 using E_CookBook.ViewModels;
 using E_CookBook.Models;
 using X.PagedList;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using E_CookBook.OCR;
 
 namespace E_CookBook.Controllers
 {
@@ -112,6 +114,27 @@ namespace E_CookBook.Controllers
             ViewBag.Ingredients = ingredients;
             ViewBag.TagList = recipe.Tags != null ? recipe.Tags.Split("|and|", StringSplitOptions.RemoveEmptyEntries).ToList() : null;
             return View(recipe);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> OCR(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file uploaded.");
+            }
+
+            try
+            {
+                RecipeOCR recipeOCR = new RecipeOCR();
+                string result = await recipeOCR.ProcessImage(file);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception (log it, return error response, etc.)
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
         }
 
         // GET: Recipes/Create
