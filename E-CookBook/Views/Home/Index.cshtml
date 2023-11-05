@@ -12,14 +12,9 @@
         @Html.ActionLink("List of Recipes", "Index", "Recipes")
 
     </button>
+    <button>
+        @Html.ActionLink("OCR", "OCR", "OCR")
 
-    <h2>Upload File</h2>
-
-    <form asp-controller="Recipes" asp-action="OCR" method="post" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="file">Choose file to upload</label>
-            <input type="file" class="form-control-file" id="file" name="file">
-        </div>
-        <button type="submit" class="btn btn-primary">Upload</button>
-    </form>
+    </button>
+    
 </div>

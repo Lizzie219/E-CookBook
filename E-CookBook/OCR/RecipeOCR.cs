@@ -3,6 +3,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.IO;
 using static System.Net.WebRequestMethods;
+using Newtonsoft.Json;
+using NuGet.Protocol;
+using Newtonsoft.Json.Linq;
 
 namespace E_CookBook.OCR
 {
@@ -34,8 +37,11 @@ namespace E_CookBook.OCR
 
                             if (response.IsSuccessStatusCode)
                             {
-                                string responseBody = await response.Content.ReadAsStringAsync();
-                                return responseBody;
+                                var responseBody = await response.Content.ReadAsStreamAsync();
+
+                                var jsonified = await JToken.LoadAsync(new JsonTextReader(new StreamReader(responseBody)));
+                                
+                                return jsonified["text"]?.ToString();
                             }
                             else
                             {

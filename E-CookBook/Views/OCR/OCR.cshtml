@@ -1,0 +1,37 @@
+﻿@{
+    ViewData["Title"] = "Create Recipe with OCR";
+}
+
+<h2>Upload File</h2>
+
+<form asp-controller="OCR" asp-action="OCR" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="file">Choose file to upload</label>
+        <input type="file" class="form-control-file" id="ingredientsFile" name="ingredientsFile">
+    </div>
+    <button type="submit" class="btn btn-primary">Upload</button>
+</form>
+
+<img id="ingredientsFileDisplay" src="#" alt="Image preview..." style="display:none;" />
+
+<script>
+    document.getElementById('ingredientsFile').addEventListener('change', function (event) {
+        var file = event.target.files[0];
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            // Get the image's URL from the reader
+            var imageUrl = e.target.result;
+
+            // Set the image's src attribute to the file's URL
+            var display = document.getElementById('ingredientsFileDisplay');
+            display.src = imageUrl;
+
+            // Make the image element visible
+            display.style.display = 'block';
+        };
+
+        // Read the image file as a data URL.
+        reader.readAsDataURL(file);
+    });
+</script>
