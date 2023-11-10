@@ -11,9 +11,11 @@ namespace E_CookBook.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> OCR(IFormFile ingredientsFile)
+        public async Task<IActionResult> ProcessImages()
         {
-            if (ingredientsFile == null || ingredientsFile.Length == 0)
+            var files = Request.Form.Files;
+
+            if (files == null || files.Count == 0)
             {
                 return BadRequest("No file uploaded.");
             }
@@ -21,7 +23,7 @@ namespace E_CookBook.Controllers
             try
             {
                 RecipeOCR recipeOCR = new RecipeOCR();
-                string result = await recipeOCR.ProcessImage(ingredientsFile);
+                string result = await recipeOCR.ProcessImage(files[0]);
                 return RedirectToAction("CreateWithOCR", "Recipes", new { ingredients = result});
             }
             catch (Exception ex)
