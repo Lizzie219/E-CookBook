@@ -11,19 +11,17 @@ namespace E_CookBook.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProcessImages()
+        public async Task<IActionResult> ProcessImages(IFormFile croppedIngredients, IFormFile croppedInstructions)
         {
-            var files = Request.Form.Files;
-
-            if (files == null || files.Count == 0)
+            if (croppedIngredients == null && croppedInstructions == null)
             {
                 return BadRequest("No file uploaded.");
             }
 
             try
-            {
+            {              
                 RecipeOCR recipeOCR = new RecipeOCR();
-                string result = await recipeOCR.ProcessImage(files[0]);
+                string result = await recipeOCR.ProcessImage(croppedIngredients);
                 return RedirectToAction("CreateWithOCR", "Recipes", new { ingredients = result});
             }
             catch (Exception ex)
@@ -31,6 +29,13 @@ namespace E_CookBook.Controllers
                 // Handle the exception (log it, return error response, etc.)
                 return StatusCode(500, "Internal server error: " + ex.Message);
             }
+        }
+
+        private byte[] ConvertBase64ToBytes(string base64String)
+        {
+            string base64Cleaned = base64String.Split(',')[1];
+            base64Cleaned = base64Cleaned.Replace(" ", "+");
+            return Convert.FromBase64String(base64Cleaned);
         }
     }
 }
