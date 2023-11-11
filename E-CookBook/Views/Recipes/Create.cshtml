@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Create";
+    List<IngredientViewModel> existingIngredients = (List<IngredientViewModel>)ViewBag.ExistingIngredients;
 }
 
 <h1>Create</h1>
@@ -109,6 +110,21 @@
         var ingredientCount = 0;
         const tagInput = document.querySelector('.tag-input');
 
+        document.loaded = afterLoad();
+
+        function afterLoad() {
+            manageIngredients();
+            manageInstructions();
+        }
+
+        function manageInstructions() {
+            var existingInstructions = @Html.Raw(JsonConvert.SerializeObject(ViewBag.ExistingInstructions));
+            if (existingInstructions != null)
+            {
+                document.getElementById("Instructions").value = existingInstructions;
+            }
+        }
+
         tagInput.addEventListener('keydown', function (e) {
             if (e.key === 'Enter' && tagInput.value.trim()) {
                 addTag(tagInput.value.trim());
@@ -142,6 +158,22 @@
             tagBadge.appendChild(deleteButton);
             document.getElementById("tagBadgeList").appendChild(tagBadge);
             document.getElementById("Tags").value += (text + "|and|");
+        }
+
+        function manageIngredients() {
+            var existingIngredientsList = @Html.Raw(JsonConvert.SerializeObject(existingIngredients));
+            if (existingIngredientsList != null) {
+                for (var i = 0; i < existingIngredientsList.length; i++) {
+                    addIngredientSpecification();
+                    loadIngredientValues(existingIngredientsList[i]);
+                }
+            }
+        }
+
+        function loadIngredientValues(existingIngredient) {
+            document.getElementById("IngredientName_" + ingredientCount.toString()).value = existingIngredient.IngredientName;
+            document.getElementById("Metric_" + ingredientCount.toString()).value = existingIngredient.Metric;
+            document.getElementById("MetricName_" + ingredientCount.toString()).value = existingIngredient.MetricName;
         }
 
         function addIngredientSpecification() {

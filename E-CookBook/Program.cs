@@ -7,6 +7,7 @@ builder.Services.AddDbContext<TastyDbContext>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 

@@ -9,6 +9,10 @@ using E_CookBook.Data;
 using E_CookBook.ViewModels;
 using E_CookBook.Models;
 using X.PagedList;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using E_CookBook.OCR;
+using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace E_CookBook.Controllers
 {
@@ -112,6 +116,47 @@ namespace E_CookBook.Controllers
             ViewBag.Ingredients = ingredients;
             ViewBag.TagList = recipe.Tags != null ? recipe.Tags.Split("|and|", StringSplitOptions.RemoveEmptyEntries).ToList() : null;
             return View(recipe);
+        }
+        public IActionResult CreateWithOCR(string ingredients, string instructions)
+        {
+            List<IngredientViewModel> ingredientViewModels = new List<IngredientViewModel>();
+
+            string fractionProcessedInput = Regex.Replace(ingredients, @"(\d+)/(\d+)", m =>
+            {
+                double numerator = double.Parse(m.Groups[1].Value);
+                double denominator = double.Parse(m.Groups[2].Value);
+                return (numerator / denominator).ToString(CultureInfo.InvariantCulture);
+            });
+            // Insert space between the number and the word if there's none
+            string processedInput = Regex.Replace(fractionProcessedInput, @"(\d+\.?\d*)([^\d\s\.])", "$1 $2");
+
+            // Assuming each ingredient is on a new line
+            string[] lines = processedInput.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            // Regex pattern to match "Quantity Metric Name"
+            string pattern = @"(\d+\.?\d*)\s+([a-zA-Z]+\.?)\s+(.+)";
+
+            foreach (string line in lines)
+            {
+                Match match = Regex.Match(line, pattern);
+                if (match.Success)
+                {
+                    ingredientViewModels.Add(new IngredientViewModel
+                    {
+                        Metric = double.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture),
+                        MetricName = match.Groups[2].Value,
+                        IngredientName = match.Groups[3].Value.Trim(),
+
+                    });
+                }
+            }
+
+            ViewBag.ExistingIngredients = ingredientViewModels;
+            ViewBag.ExistingInstructions = instructions;
+            ViewBag.Categories = new SelectList(_context.Category, "ID", "Name");
+            ViewBag.PriceCategories = new SelectList(_context.PriceCategory, "ID", "Name");
+
+            return View("Create");
         }
 
         // GET: Recipes/Create

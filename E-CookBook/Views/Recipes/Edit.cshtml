@@ -116,7 +116,7 @@
             manageTags();
             manageIngredients();
         }
-        
+
         // #region Tags
         tagInput.addEventListener('keydown', function (e) {
             if (e.key === 'Enter' && tagInput.value.trim()) {
@@ -164,23 +164,25 @@
 
         // #endregion
         // #region Ingredients
-        function manageIngredients(){
+        function manageIngredients() {
             var existingIngredientsList = @Html.Raw(JsonConvert.SerializeObject(existingIngredients));
             var section = "";
-            for(var i = 0; i < existingIngredientsList.length; i++){
-                if (section != existingIngredientsList[i].Section && existingIngredientsList[i].Section != null) {
-                    section = existingIngredientsList[i].Section;
-                    addNewSection(section);
+            if (existingIngredientsList != null) {
+                for (var i = 0; i < existingIngredientsList.length; i++) {
+                    if (section != existingIngredientsList[i].Section && existingIngredientsList[i].Section != null) {
+                        section = existingIngredientsList[i].Section;
+                        addNewSection(section);
+                    }
+                    addIngredientSpecification();
+                    loadIngredientValues(existingIngredientsList[i]);
                 }
-                addIngredientSpecification();
-                loadIngredientValues(existingIngredientsList[i]);
             }
         }
 
         function loadIngredientValues(existingIngredient) {
             document.getElementById("IngredientName_" + ingredientCount.toString()).value = existingIngredient.IngredientName;
             document.getElementById("Metric_" + ingredientCount.toString()).value = existingIngredient.Metric;
-            document.getElementById("MetricName_" + ingredientCount.toString()).value = existingIngredient.MetricName;          
+            document.getElementById("MetricName_" + ingredientCount.toString()).value = existingIngredient.MetricName;
             document.getElementById("SpecIDHidden_" + ingredientCount.toString()).value = existingIngredient.IngredientSpecificationID;
         }
 
@@ -207,7 +209,7 @@
             var metricNameInput = document.createElement("input");
             metricNameInput.type = "text";
             metricNameInput.name = "MetricName_" + ingredientCount.toString();
-            metricNameInput.id = "MetricName_" + ingredientCount.toString();           
+            metricNameInput.id = "MetricName_" + ingredientCount.toString();
 
             // Ingredient
             var nameInput = document.createElement("input");
@@ -242,10 +244,10 @@
                 var row = deleteButton.closest('tr');
 
                 var ingredientInput = row.querySelector('.delete-helper');
-                if (ingredientInput) {  
+                if (ingredientInput) {
                     ingredientInput.value = "DELETED";
                 }
-                
+
                 row.style.display = 'none';
             });
         }

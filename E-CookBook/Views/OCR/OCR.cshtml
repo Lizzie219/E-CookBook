@@ -1,0 +1,99 @@
+﻿@{
+    ViewData["Title"] = "Create Recipe with OCR";
+}
+
+<div id="overlay" style="display: none; position: fixed; width: 100%; height: 100%; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 2; cursor: pointer;">
+    <div class="spinner-grow text-primary" role="status" style="position: absolute; top: 50%; left: 50%;">
+        <span class="visually-hidden">Extracting text..</span>
+    </div>
+</div>
+<h2>Upload File</h2>
+<form asp-action="ProcessImages" enctype="multipart/form-data" id="uploadForm">
+    <div class="form-group col">
+        <label>Choose file to upload</label>
+        <input type="file" class="form-control-file" id="recipeFile" name="recipeFile" />
+        <label>Select the Ingredients:</label>
+        <img id="ingredientsFileDisplay" src="#" alt="Image preview..." style="display:none;" />
+    </div>
+    <br />
+    <label>Select the Instructions</label>
+    <div class="form-group col">
+        <img id="instructionsFileDisplay" src="#" alt="Image preview..." style="display:none;" />
+    </div>
+    <button type="submit" id="submit" disabled>Submit</button>
+</form>
+
+<script>
+    // initializing cropper
+    var recipeFile = document.getElementById('recipeFile');
+    var ingredientsImage = document.getElementById('ingredientsFileDisplay');
+    var instructionsImage = document.getElementById('instructionsFileDisplay');
+
+    setUpCropper(recipeFile, ingredientsImage, "ingredientsCropper");
+    setUpCropper(recipeFile, instructionsImage, "instructionsCropper");
+
+    // Cropper setup for the 2 input files
+    function setUpCropper(input, image, cropper) {
+        input.addEventListener('change', function (e) {
+            document.getElementById("submit").disabled = false;
+            var files = e.target.files;
+            var done = function (url) {
+                //input.value = '';
+                image.src = url;
+                image.style.display = 'block';
+                if (window[cropper]) {
+                    window[cropper].destroy();
+                }
+                window[cropper] = new Cropper(image, {
+                    // more cropper options could come here like ratios - may come in handy later
+                });
+            };
+
+            if (files && files.length > 0) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    done(reader.result);
+                };
+                reader.readAsDataURL(files[0]);
+            }
+        });
+    }
+
+    document.getElementById('uploadForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        document.getElementById('overlay').style.display = 'block'; // Show overlay
+
+        var formData = new FormData();
+        window["ingredientsCropper"].getCroppedCanvas().toBlob(function (blob1) {
+            formData.append('croppedIngredients', blob1, 'croppedIngredients.png');
+
+            window["instructionsCropper"].getCroppedCanvas().toBlob(function (blob2) {
+                formData.append('croppedInstructions', blob2, 'croppedInstructions.png');
+
+                // Submit formData via AJAX
+                fetch('/OCR/ProcessImages', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        document.getElementById('overlay').style.display = 'none'; // Hide overlay
+
+                        // if text-extraction was successful
+                        if (response.redirected) {
+                            // Redirect the browser to the new URL --> to Create recipe
+                            window.location.href = response.url;
+                        }
+                        else{
+                            // for something unexpected
+                            return response.json();
+                        }
+                    })
+                    .catch(error => {
+                        document.getElementById('overlay').style.display = 'none'; // Hide overlay
+                        console.error('Error:', error);
+                    });
+            });
+        });
+    });
+
+</script>
