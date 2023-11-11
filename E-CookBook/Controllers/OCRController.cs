@@ -15,11 +15,10 @@ namespace E_CookBook.Controllers
         {
             if (croppedIngredients == null && croppedInstructions == null)
             {
-                return BadRequest("No file uploaded.");
+                return RedirectToAction("ErrorOCR", "OCR", new { errorMessage = "No file uploaded" });
             }
-
             try
-            {              
+            {
                 RecipeOCR recipeOCR = new RecipeOCR();
                 string ingredients = "";
                 string instructions = "";
@@ -27,24 +26,21 @@ namespace E_CookBook.Controllers
                 {
                     ingredients = await recipeOCR.ProcessImage(croppedIngredients);
                 }
-                if(croppedInstructions != null)
+                if (croppedInstructions != null)
                 {
                     instructions = await recipeOCR.ProcessImage(croppedInstructions);
                 }
-                return RedirectToAction("CreateWithOCR", "Recipes", new { ingredients = ingredients, instructions = instructions});
+                return RedirectToAction("CreateWithOCR", "Recipes", new { ingredients = ingredients, instructions = instructions });
             }
             catch (Exception ex)
             {
-                // Handle the exception (log it, return error response, etc.)
-                return StatusCode(500, "Internal server error: " + ex.Message);
+                return RedirectToAction("ErrorOCR", "OCR", new { errorMessage = "500 - " + ex.Message });
             }
         }
-
-        private byte[] ConvertBase64ToBytes(string base64String)
+        public IActionResult ErrorOCR(string errorMessage)
         {
-            string base64Cleaned = base64String.Split(',')[1];
-            base64Cleaned = base64Cleaned.Replace(" ", "+");
-            return Convert.FromBase64String(base64Cleaned);
+            ViewBag.ErrorMessage = errorMessage;
+            return View();
         }
     }
 }
