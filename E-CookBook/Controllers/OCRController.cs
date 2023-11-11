@@ -21,8 +21,17 @@ namespace E_CookBook.Controllers
             try
             {              
                 RecipeOCR recipeOCR = new RecipeOCR();
-                string result = await recipeOCR.ProcessImage(croppedIngredients);
-                return RedirectToAction("CreateWithOCR", "Recipes", new { ingredients = result});
+                string ingredients = "";
+                string instructions = "";
+                if (croppedIngredients != null)
+                {
+                    ingredients = await recipeOCR.ProcessImage(croppedIngredients);
+                }
+                if(croppedInstructions != null)
+                {
+                    instructions = await recipeOCR.ProcessImage(croppedInstructions);
+                }
+                return RedirectToAction("CreateWithOCR", "Recipes", new { ingredients = ingredients, instructions = instructions});
             }
             catch (Exception ex)
             {

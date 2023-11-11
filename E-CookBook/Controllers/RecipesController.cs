@@ -117,7 +117,7 @@ namespace E_CookBook.Controllers
             ViewBag.TagList = recipe.Tags != null ? recipe.Tags.Split("|and|", StringSplitOptions.RemoveEmptyEntries).ToList() : null;
             return View(recipe);
         }
-        public IActionResult CreateWithOCR(string ingredients)
+        public IActionResult CreateWithOCR(string ingredients, string instructions)
         {
             List<IngredientViewModel> ingredientViewModels = new List<IngredientViewModel>();
 
@@ -152,6 +152,7 @@ namespace E_CookBook.Controllers
             }
 
             ViewBag.ExistingIngredients = ingredientViewModels;
+            ViewBag.ExistingInstructions = instructions;
             ViewBag.Categories = new SelectList(_context.Category, "ID", "Name");
             ViewBag.PriceCategories = new SelectList(_context.PriceCategory, "ID", "Name");
 

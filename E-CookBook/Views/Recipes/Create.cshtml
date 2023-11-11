@@ -114,6 +114,15 @@
 
         function afterLoad() {
             manageIngredients();
+            manageInstructions();
+        }
+
+        function manageInstructions() {
+            var existingInstructions = @Html.Raw(JsonConvert.SerializeObject(ViewBag.ExistingInstructions));
+            if (existingInstructions != null)
+            {
+                document.getElementById("Instructions").value = existingInstructions;
+            }
         }
 
         tagInput.addEventListener('keydown', function (e) {
