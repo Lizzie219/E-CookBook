@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using E_CookBook.OCR;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using System.Text;
 
 namespace E_CookBook.Controllers
 {
@@ -389,6 +390,29 @@ namespace E_CookBook.Controllers
         private bool RecipeExists(int id)
         {
             return (_context.Recipe?.Any(e => e.ID == id)).GetValueOrDefault();
+        }
+
+        public ActionResult GenerateShoppingList(int recipeID)
+        {
+            Recipe recipe = _context.Recipe.Find(recipeID);
+            if (recipe != null)
+            {
+                string list = "Ingredients\n\n";
+                string section = "";
+                foreach (var ingredient in recipe.Ingredients)
+                {
+                    if (!string.Equals(section, ingredient.Section))
+                    {
+                        section = ingredient.Section;
+                        list += section + "\n";
+                    }
+                    list += "          " + ingredient.Quantity.ToString() + " " + ingredient.QuantityMetric.Name + " " + ingredient.Ingredient.Name + "\n";
+
+                }
+                byte[] bytes = Encoding.UTF8.GetBytes(list);
+                return File(bytes, "text/plain", recipe.Name + "_ingredients.txt");
+            }
+            return NotFound();
         }
     }
 }
