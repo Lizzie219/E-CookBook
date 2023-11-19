@@ -71,11 +71,6 @@
                     <th>Name</th>
                     <th></th>
                 </tr>
-                <tr>
-                    <td colspan="5">
-                        <input type="text" id="Section_1" name="Section_1" disabled hidden />
-                    </td>
-                </tr>
             </table>
             <br />
             <div class="form-group">
@@ -89,9 +84,6 @@
         <br />
         <div class="form-group">
             <button id="addIngrButton" onclick="addIngredientSpecification()">Add Ingredient</button>
-        </div>
-        <div class="form-group">
-            <button id="addSectionButton" onclick="addNewSection()">Add New Section for Ingredients</button>
         </div>
     </div>
 </div>
@@ -119,8 +111,7 @@
 
         function manageInstructions() {
             var existingInstructions = @Html.Raw(JsonConvert.SerializeObject(ViewBag.ExistingInstructions));
-            if (existingInstructions != null)
-            {
+            if (existingInstructions != null) {
                 document.getElementById("Instructions").value = existingInstructions;
             }
         }
@@ -183,38 +174,15 @@
             var table = document.getElementById("ingredientsTable");
             var newRow = table.insertRow();
 
-            var nullCell = newRow.insertCell(0);
+            var sectionCell = newRow.insertCell(0);
             var metricCell = newRow.insertCell(1);
             var metricNameCell = newRow.insertCell(2);
             var nameCell = newRow.insertCell(3);
             var deleteCell = newRow.insertCell(4);
 
-            var nameInput = document.createElement("input");
-            nameInput.type = "text";
-            nameInput.name = "IngredientName_" + ingredientCount.toString();
-            nameInput.id = "IngredientName_" + ingredientCount.toString();
-
-            var metricInput = document.createElement("input");
-            metricInput.type = "number";
-            metricInput.name = "Metric_" + ingredientCount.toString();
-            metricInput.id = "Metric_" + ingredientCount.toString();
-
-            var metricNameInput = document.createElement("input");
-            metricNameInput.type = "text";
-            metricNameInput.name = "MetricName_" + ingredientCount.toString();
-            metricNameInput.id = "MetricName_" + ingredientCount.toString();
-
             var deleteButton = document.createElement("button");
             deleteButton.type = "button";
             deleteButton.classList += "btn-close";
-
-            nameCell.appendChild(nameInput);
-            metricCell.appendChild(metricInput);
-            metricNameCell.appendChild(metricNameInput);
-            deleteCell.appendChild(deleteButton);
-
-            document.getElementById("addSectionButton").disabled = false;
-
             deleteButton.addEventListener('click', function () {
                 // Get the button's parent <td> element and then its parent <tr> element
                 var row = deleteButton.parentElement.parentElement;
@@ -222,32 +190,21 @@
                 // Remove the <tr> element (row) from the table
                 row.parentNode.removeChild(row);
             });
+
+            sectionCell.appendChild(createInput("text", "Section"));
+            nameCell.appendChild(createInput("text", "IngredientName"));
+            metricCell.appendChild(createInput("number", "Metric"));
+            metricNameCell.appendChild(createInput("text", "MetricName"));
+            deleteCell.appendChild(deleteButton);
         }
 
-        function addNewSection() {
-            // if addNewSection is called for the first time
-            if (document.getElementById("Section_1").hasAttribute('hidden')) {
-                var firstSection = document.getElementById("Section_1");
-                firstSection.disabled = false;
-                firstSection.hidden = false;
-                firstSection.value = "Default";
-            }
-            else {
-                var table = document.getElementById("ingredientsTable");
-                var newRow = table.insertRow();
+        function createInput(type = "text", nameAndID = "Default") {
+            var input = document.createElement("input");
+            input.type = type;
+            input.name = nameAndID + "_" + ingredientCount.toString();
+            input.id = nameAndID + "_" + ingredientCount.toString();
 
-                var sectionCell = newRow.insertCell(0);
-                sectionCell.colSpan = 5;
-
-                var sectionInput = document.createElement("input");
-                sectionInput.type = "text";
-                sectionInput.name = "Section_" + (ingredientCount + 1).toString();       // number indicates the first ingredient in this section
-                sectionInput.id = "Section_" + (ingredientCount + 1).toString();
-
-                sectionCell.appendChild(sectionInput);
-
-            }
-            document.getElementById("addSectionButton").disabled = true;
+            return input;
         }
 
         function validatePhoto(inputElement) {

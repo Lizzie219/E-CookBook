@@ -147,7 +147,6 @@ namespace E_CookBook.Controllers
                         Metric = double.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture),
                         MetricName = match.Groups[2].Value,
                         IngredientName = match.Groups[3].Value.Trim(),
-
                     });
                 }
             }
@@ -163,6 +162,8 @@ namespace E_CookBook.Controllers
         // GET: Recipes/Create
         public IActionResult Create()
         {
+            ViewBag.ExistingIngredients = null;
+            ViewBag.ExistingInstructions = null;
             ViewBag.Categories = new SelectList(_context.Category, "ID", "Name");
             ViewBag.PriceCategories = new SelectList(_context.PriceCategory, "ID", "Name");
 
@@ -211,9 +212,9 @@ namespace E_CookBook.Controllers
                     string section = "";
                     for (int i = 1; i <= int.Parse(Request.Form["IngredientCount"]); i++)
                     {
-                        section = !string.IsNullOrEmpty(Request.Form["Section_" + i]) ? Request.Form["Section_" + i] : section;
                         if (!string.IsNullOrEmpty(Request.Form["Metric_" + i]) && !string.IsNullOrEmpty(Request.Form["MetricName_" + i]) && !string.IsNullOrEmpty(Request.Form["IngredientName_" + i]))
                         {
+                            section = !string.IsNullOrEmpty(Request.Form["Section_" + i]) ? Request.Form["Section_" + i] : section;
                             ispecController.Create(recipe.ID, double.Parse(Request.Form["Metric_" + i]), Request.Form["MetricName_" + i], Request.Form["IngredientName_" + i], section);
                         }
                     }
@@ -222,6 +223,8 @@ namespace E_CookBook.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.ExistingIngredients = null;
+            ViewBag.ExistingInstructions = null;
             ViewBag.Categories = new SelectList(_context.Category, "ID", "Name");
             ViewBag.PriceCategories = new SelectList(_context.PriceCategory, "ID", "Name");
             return View(recipe);
@@ -309,9 +312,9 @@ namespace E_CookBook.Controllers
                             {
                                 ispecController.Remove(int.Parse(Request.Form["SpecIDHidden_" + i]));
                             }
-                            if (!string.IsNullOrEmpty(Request.Form["Metric_" + i]) && !string.IsNullOrEmpty(Request.Form["MetricName_" + i]) && !string.IsNullOrEmpty(Request.Form["IngredientName_" + i]))
+                            else if (!string.IsNullOrEmpty(Request.Form["Metric_" + i]) && !string.IsNullOrEmpty(Request.Form["MetricName_" + i]) && !string.IsNullOrEmpty(Request.Form["IngredientName_" + i]))
                             {
-                                section = !string.IsNullOrEmpty(Request.Form["Section" + i]) ? Request.Form["Section" + i] : section;
+                                section = !string.IsNullOrEmpty(Request.Form["Section_" + i]) ? Request.Form["Section_" + i] : section;
                                 ispecController.Edit(int.Parse(Request.Form["SpecIDHidden_" + i]), double.Parse(Request.Form["Metric_" + i]), Request.Form["MetricName_" + i], Request.Form["IngredientName_" + i], recipe.ID, section);
                             }
                         }

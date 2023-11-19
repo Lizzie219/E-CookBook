@@ -72,12 +72,7 @@
                     <th>Metric</th>
                     <th>Name</th>
                     <th></th>
-                </tr>
-                <tr>
-                    <td colspan="5">
-                        <input type="text" id="Section_1" name="Section_1" disabled hidden />
-                    </td>
-                </tr>
+                </tr>               
             </table>
             <br />
             <div class="form-group">
@@ -89,10 +84,7 @@
         </div>
         <div class="form-group">
             <button id="addIngrButton" onclick="addIngredientSpecification()">Add Ingredient</button>
-        </div>
-        <div class="form-group">
-            <button id="addSectionButton" onclick="addNewSection()">Add New Section for Ingredients</button>
-        </div>
+        </div        
     </div>
 </div>
 
@@ -169,17 +161,23 @@
             var section = "";
             if (existingIngredientsList != null) {
                 for (var i = 0; i < existingIngredientsList.length; i++) {
+                    addIngredientSpecification();
                     if (section != existingIngredientsList[i].Section && existingIngredientsList[i].Section != null) {
                         section = existingIngredientsList[i].Section;
-                        addNewSection(section);
+                        loadIngredientValues(existingIngredientsList[i], section);
                     }
-                    addIngredientSpecification();
-                    loadIngredientValues(existingIngredientsList[i]);
+                    else
+                    {
+                        loadIngredientValues(existingIngredientsList[i], "");
+                    }
                 }
             }
         }
 
-        function loadIngredientValues(existingIngredient) {
+        function loadIngredientValues(existingIngredient, section) {
+            if(section != ""){
+                document.getElementById("Section_" + ingredientCount.toString()).value = existingIngredient.Section;
+            }
             document.getElementById("IngredientName_" + ingredientCount.toString()).value = existingIngredient.IngredientName;
             document.getElementById("Metric_" + ingredientCount.toString()).value = existingIngredient.Metric;
             document.getElementById("MetricName_" + ingredientCount.toString()).value = existingIngredient.MetricName;
@@ -193,52 +191,24 @@
             var table = document.getElementById("ingredientsTable");
             var newRow = table.insertRow();
 
-            var nullCell = newRow.insertCell(0);
+            var sectionCell = newRow.insertCell(0);
             var metricCell = newRow.insertCell(1);
             var metricNameCell = newRow.insertCell(2);
             var nameCell = newRow.insertCell(3);
             var deleteCell = newRow.insertCell(4);
 
-            // Quantity
-            var metricInput = document.createElement("input");
-            metricInput.type = "number";
-            metricInput.name = "Metric_" + ingredientCount.toString();
-            metricInput.id = "Metric_" + ingredientCount.toString();
-
-            // Quantity Metric
-            var metricNameInput = document.createElement("input");
-            metricNameInput.type = "text";
-            metricNameInput.name = "MetricName_" + ingredientCount.toString();
-            metricNameInput.id = "MetricName_" + ingredientCount.toString();
-
             // Ingredient
-            var nameInput = document.createElement("input");
-            nameInput.type = "text";
-            nameInput.name = "IngredientName_" + ingredientCount.toString();
-            nameInput.id = "IngredientName_" + ingredientCount.toString();
+            var nameInput = createInput("text", "IngredientName");
             nameInput.classList.add("delete-helper");
+
+            // Ingredient Specification ID
+            var specInputHidden = createInput("hidden", "SpecIDHidden");
+            specInputHidden.value = "-19";   // default
 
             // delete Button
             var deleteButton = document.createElement("button");
             deleteButton.type = "button";
             deleteButton.classList += "btn-close";
-
-            // Ingredient Specification ID
-            var specInputHidden = document.createElement("input");
-            specInputHidden.type = "hidden";
-            specInputHidden.name = "SpecIDHidden_" + ingredientCount.toString();
-            specInputHidden.id = "SpecIDHidden_" + ingredientCount.toString();
-            specInputHidden.value = "-19";   // default
-
-            // Add inputs to cells
-            nameCell.appendChild(nameInput);
-            nameCell.appendChild(specInputHidden);
-            metricCell.appendChild(metricInput);
-            metricNameCell.appendChild(metricNameInput);
-            deleteCell.appendChild(deleteButton);
-
-            document.getElementById("addSectionButton").disabled = false;
-
             deleteButton.addEventListener('click', function () {
                 // hide the row, then delete the Ingredient Specification (if in database) on backend
                 var row = deleteButton.closest('tr');
@@ -250,33 +220,23 @@
 
                 row.style.display = 'none';
             });
+
+            // Add inputs to cells
+            sectionCell.appendChild(createInput("text", "Section"));
+            nameCell.appendChild(specInputHidden);
+            nameCell.appendChild(nameInput);
+            metricCell.appendChild(createInput("number", "Metric"));
+            metricNameCell.appendChild(createInput("text", "MetricName"));
+            deleteCell.appendChild(deleteButton);
         }
+        
+        function createInput(type = "text", nameAndID = "Default") {
+            var input = document.createElement("input");
+            input.type = type;
+            input.name = nameAndID + "_" + ingredientCount.toString();
+            input.id = nameAndID + "_" + ingredientCount.toString();
 
-        function addNewSection(text = "") {
-            // if addNewSection is called for the first time
-            if (document.getElementById("Section_1").hasAttribute('hidden')) {
-                var firstSection = document.getElementById("Section_1");
-                firstSection.disabled = false;
-                firstSection.hidden = false;
-                firstSection.value = text;
-            }
-            else {
-                var table = document.getElementById("ingredientsTable");
-                var newRow = table.insertRow();
-
-                var sectionCell = newRow.insertCell(0);
-                sectionCell.colSpan = 5;
-
-                var sectionInput = document.createElement("input");
-                sectionInput.type = "text";
-                sectionInput.name = "Section_" + (ingredientCount + 1).toString();       // number indicates the first ingredient in this section
-                sectionInput.id = "Section_" + (ingredientCount + 1).toString();
-                sectionInput.value = text;
-
-                sectionCell.appendChild(sectionInput);
-
-            }
-            document.getElementById("addSectionButton").disabled = true;
+            return input;
         }
 
         // #endregion
