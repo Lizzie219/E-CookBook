@@ -1,3 +1,23 @@
 ﻿.badge-background-color {
     background-color:blueviolet;
 }
+.full-width-image {
+    width: 100vw;
+    height: auto;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+}
+.text-overlay {
+    position: absolute; /* Position the text absolutely within the container */
+    top: 0; /* Align to the top */
+    right: 0; /* Align to the right */
+    color: #05603F; /* Text color, adjust as needed */
+    padding: 10px; /* Optional: for spacing around the text */
+}
+.image-container {
+    position: relative; /* This enables absolute positioning for child elements */
+    width: 100%; /* Adjust as needed */
+}

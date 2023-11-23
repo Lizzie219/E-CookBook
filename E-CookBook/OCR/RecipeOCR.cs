@@ -20,6 +20,7 @@ namespace E_CookBook.OCR
                 throw new ArgumentException("File is null or empty.", nameof(file));
             }
 
+            // path to the Python server
             string serverUrl = "http://localhost:5000/extract-text";
 
             using (var form = new MultipartFormDataContent())
@@ -32,6 +33,7 @@ namespace E_CookBook.OCR
                         {
                             fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
 
+                            // 'photo' is the parameter that the server expects
                             form.Add(fileContent, "photo", file.FileName);
                             HttpResponseMessage response = await client.PostAsync(serverUrl, form);
 
@@ -45,7 +47,7 @@ namespace E_CookBook.OCR
                             }
                             else
                             {
-                                // Log the error or throw an exception as per your error handling
+                                // Exception handling
                                 throw new HttpRequestException($"Error from OCR service: {(int)response.StatusCode} {response.ReasonPhrase}");
                             }
                         }
