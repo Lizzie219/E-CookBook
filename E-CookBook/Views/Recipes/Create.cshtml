@@ -79,7 +79,7 @@
         </form>
         <br />
         <div class="form-group">
-            <input type="text" class="tag-input" placeholder="Add a tag...">
+            <input type="text" id="tagInput" placeholder="Add a tag...">
         </div>
         <br />
         <div class="form-group">
@@ -100,7 +100,7 @@
 
     <script>
         var ingredientCount = 0;
-        const tagInput = document.querySelector('.tag-input');
+        const tagInput = document.getElementById('tagInput');
 
         document.loaded = afterLoad();
 

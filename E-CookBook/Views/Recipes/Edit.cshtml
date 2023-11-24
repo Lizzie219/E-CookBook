@@ -80,11 +80,11 @@
             </div>
         </form>
         <div class="form-group">
-            <input type="text" class="tag-input" placeholder="Add a tag...">
+            <input type="text" id="tagInput" placeholder="Add a tag...">
         </div>
         <div class="form-group">
             <button id="addIngrButton" onclick="addIngredientSpecification()">Add Ingredient</button>
-        </div        
+        </div>        
     </div>
 </div>
 
@@ -100,7 +100,7 @@
 
     <script>
         var ingredientCount = 0;
-        const tagInput = document.querySelector('.tag-input');
+        const tagInput = document.getElementById('tagInput');
 
         document.loaded = afterLoad();
 
