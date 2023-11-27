@@ -11,13 +11,13 @@
     margin-right: -50vw;
 }
 .text-overlay {
-    position: absolute; /* Position the text absolutely within the container */
-    top: 0; /* Align to the top */
-    right: 0; /* Align to the right */
-    color: #05603F; /* Text color, adjust as needed */
-    padding: 10px; /* Optional: for spacing around the text */
+    position: absolute;
+    top: 0;
+    right: 0; 
+    color: #05603F;
+    padding: 10px;
 }
 .image-container {
-    position: relative; /* This enables absolute positioning for child elements */
-    width: 100%; /* Adjust as needed */
+    position: relative;
+    width: 100%;
 }
