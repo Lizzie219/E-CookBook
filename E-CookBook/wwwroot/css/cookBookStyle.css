@@ -1,23 +1,43 @@
 ﻿.badge-background-color {
-    background-color:blueviolet;
+    background-color: #4D967A;
 }
-.full-width-image {
-    width: 100vw;
+
+.home-images {
+    max-width: 100%;
     height: auto;
-    position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
+    display: block;
 }
-.text-overlay {
+
+.home-images-container {
+    position: relative;
+    display: inline-block;
+}
+
+.home-images-text-base {
     position: absolute;
-    top: 0;
-    right: 0; 
-    color: #05603F;
-    padding: 10px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #482F1D;
+    font-size: 2vw;
+    background-color: #4D967A;
+    text-decoration: none;
+    padding: 5px;
+    border-radius: 5px;
 }
-.image-container {
-    position: relative;
-    width: 100%;
+
+.home-images-text-create {
+    top: 50%;
+}
+
+.home-images-find-text {  
+    top: 34%;   
+}
+
+.home-images-text-base:hover {
+    color: #990603;
+}
+
+.footer-style {
+    min-height: 100px;
+    background-color: #4D967A;
 }
