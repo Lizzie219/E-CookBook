@@ -1,5 +1,18 @@
 ﻿.badge-background-color {
     background-color: #4D967A;
+    color: #FFFFF6;
+}
+
+.layout-font-color {
+    color: #FFFFF6 !important;
+}
+
+.layout-dropdown-style {
+    background-color: #4D967A;
+}
+
+.dropdown-item:hover {
+    background-color: #FFFFF6
 }
 
 .home-images {
@@ -29,8 +42,8 @@
     top: 50%;
 }
 
-.home-images-find-text {  
-    top: 34%;   
+.home-images-find-text {
+    top: 34%;
 }
 
 .home-images-text-base:hover {
@@ -40,4 +53,5 @@
 .footer-style {
     min-height: 100px;
     background-color: #4D967A;
+    color: #FFFFF6;
 }

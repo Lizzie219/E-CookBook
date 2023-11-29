@@ -79,7 +79,7 @@
         </form>
         <br />
         <div class="form-group">
-            <input type="text" id="tagInput" placeholder="Add a tag...">
+            <input type="text" id="tagInput" onkeydown="tagInputKeyDown(event)" placeholder="Add a tag...">
         </div>
         <br />
         <div class="form-group">
@@ -100,8 +100,6 @@
 
     <script>
         var ingredientCount = 0;
-        const tagInput = document.getElementById('tagInput');
-
         document.loaded = afterLoad();
 
         function afterLoad() {
@@ -114,57 +112,16 @@
             if (existingInstructions != null) {
                 document.getElementById("Instructions").value = existingInstructions;
             }
-        }
-
-        tagInput.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' && tagInput.value.trim()) {
-                addTag(tagInput.value.trim());
-                tagInput.value = '';
-            }
-        });
-
-        function addTag(text) {
-            var tagBadge = document.createElement("span");
-            tagBadge.classList.add("badge");
-            tagBadge.classList.add("rounded-pill");
-            tagBadge.classList.add("text-bg-primary");
-            tagBadge.classList.add("badge-background-color");
-            tagBadge.innerText = text;
-
-            var deleteButton = document.createElement("button");
-            deleteButton.type = "button";
-            deleteButton.classList += "btn-close";
-            deleteButton.addEventListener('click', function () {
-                var badge = this.closest('.badge');
-                badge.parentNode.removeChild(badge);
-
-                var tagsInput = document.getElementById("Tags");
-                tagsInput.value = '';
-                var allTags = document.getElementById("tagBadgeList").getElementsByTagName("span");
-                for (var i = 0; i < allTags.length; i++) {
-                    tagsInput.value += (allTags[i].textContent + "|and|");
-                }
-            });
-
-            tagBadge.appendChild(deleteButton);
-            document.getElementById("tagBadgeList").appendChild(tagBadge);
-            document.getElementById("Tags").value += (text + "|and|");
-        }
+        }           
 
         function manageIngredients() {
             var existingIngredientsList = @Html.Raw(JsonConvert.SerializeObject(existingIngredients));
             if (existingIngredientsList != null) {
                 for (var i = 0; i < existingIngredientsList.length; i++) {
                     addIngredientSpecification();
-                    loadIngredientValues(existingIngredientsList[i]);
+                    loadBaseIngredientValues(existingIngredientsList[i], ingredientCount);
                 }
             }
-        }
-
-        function loadIngredientValues(existingIngredient) {
-            document.getElementById("IngredientName_" + ingredientCount.toString()).value = existingIngredient.IngredientName;
-            document.getElementById("Metric_" + ingredientCount.toString()).value = existingIngredient.Metric;
-            document.getElementById("MetricName_" + ingredientCount.toString()).value = existingIngredient.MetricName;
         }
 
         function addIngredientSpecification() {
@@ -191,33 +148,10 @@
                 row.parentNode.removeChild(row);
             });
 
-            sectionCell.appendChild(createInput("text", "Section"));
-            nameCell.appendChild(createInput("text", "IngredientName"));
-            metricCell.appendChild(createInput("number", "Metric"));
-            metricNameCell.appendChild(createInput("text", "MetricName"));
+            sectionCell.appendChild(createInput("text", "Section", ingredientCount));
+            nameCell.appendChild(createInput("text", "IngredientName", ingredientCount));
+            metricCell.appendChild(createInput("number", "Metric", ingredientCount));
+            metricNameCell.appendChild(createInput("text", "MetricName", ingredientCount));
             deleteCell.appendChild(deleteButton);
-        }
-
-        function createInput(type = "text", nameAndID = "Default") {
-            var input = document.createElement("input");
-            input.type = type;
-            input.name = nameAndID + "_" + ingredientCount.toString();
-            input.id = nameAndID + "_" + ingredientCount.toString();
-
-            return input;
-        }
-
-        function validatePhoto(inputElement) {
-            const file = inputElement.files[0];
-            if (file) {
-                const fileType = file['type'];
-                const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
-
-                if (!validImageTypes.includes(fileType)) {
-                    alert('Please upload a valid image.');
-                    inputElement.value = '';  // Clear the input
-                }
-            }
-        }
-
+        }       
     </script>

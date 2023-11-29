@@ -72,7 +72,7 @@
                     <th>Metric</th>
                     <th>Name</th>
                     <th></th>
-                </tr>               
+                </tr>
             </table>
             <br />
             <div class="form-group">
@@ -80,11 +80,11 @@
             </div>
         </form>
         <div class="form-group">
-            <input type="text" id="tagInput" placeholder="Add a tag...">
+            <input type="text" id="tagInput" onkeydown="tagInputKeyDown(event)" placeholder="Add a tag...">
         </div>
         <div class="form-group">
             <button id="addIngrButton" onclick="addIngredientSpecification()">Add Ingredient</button>
-        </div>        
+        </div>
     </div>
 </div>
 
@@ -100,8 +100,6 @@
 
     <script>
         var ingredientCount = 0;
-        const tagInput = document.getElementById('tagInput');
-
         document.loaded = afterLoad();
 
         function afterLoad() {
@@ -109,14 +107,7 @@
             manageIngredients();
         }
 
-        // #region Tags
-        tagInput.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' && tagInput.value.trim()) {
-                addTag(tagInput.value.trim());
-                tagInput.value = '';
-            }
-        });
-
+        // #region Tags       
         function manageTags() {
             var tags = @Html.Raw(JsonConvert.SerializeObject(TagList));
             if (tags != null) {
@@ -124,34 +115,6 @@
                     addTag(tags[i]);
                 }
             }
-        }
-
-        function addTag(text) {
-            var tagBadge = document.createElement("span");
-            tagBadge.classList.add("badge");
-            tagBadge.classList.add("rounded-pill");
-            tagBadge.classList.add("text-bg-primary");
-            tagBadge.classList.add("badge-background-color");
-            tagBadge.innerText = text;
-
-            var deleteButton = document.createElement("button");
-            deleteButton.type = "button";
-            deleteButton.classList += "btn-close";
-            deleteButton.addEventListener('click', function () {
-                var badge = this.closest('.badge');
-                badge.parentNode.removeChild(badge);
-
-                var tagsInput = document.getElementById("Tags");
-                tagsInput.value = '';
-                var allTags = document.getElementById("tagBadgeList").getElementsByTagName("span");
-                for (var i = 0; i < allTags.length; i++) {
-                    tagsInput.value += (allTags[i].textContent + "|and|");
-                }
-            });
-
-            tagBadge.appendChild(deleteButton);
-            document.getElementById("tagBadgeList").appendChild(tagBadge);
-            document.getElementById("Tags").value += (text + "|and|");
         }
 
         // #endregion
@@ -166,8 +129,7 @@
                         section = existingIngredientsList[i].Section;
                         loadIngredientValues(existingIngredientsList[i], section);
                     }
-                    else
-                    {
+                    else {
                         loadIngredientValues(existingIngredientsList[i], "");
                     }
                 }
@@ -175,12 +137,10 @@
         }
 
         function loadIngredientValues(existingIngredient, section) {
-            if(section != ""){
+            loadBaseIngredientValues(existingIngredient, ingredientCount);
+            if (section != "") {
                 document.getElementById("Section_" + ingredientCount.toString()).value = existingIngredient.Section;
             }
-            document.getElementById("IngredientName_" + ingredientCount.toString()).value = existingIngredient.IngredientName;
-            document.getElementById("Metric_" + ingredientCount.toString()).value = existingIngredient.Metric;
-            document.getElementById("MetricName_" + ingredientCount.toString()).value = existingIngredient.MetricName;
             document.getElementById("SpecIDHidden_" + ingredientCount.toString()).value = existingIngredient.IngredientSpecificationID;
         }
 
@@ -198,11 +158,11 @@
             var deleteCell = newRow.insertCell(4);
 
             // Ingredient
-            var nameInput = createInput("text", "IngredientName");
+            var nameInput = createInput("text", "IngredientName", ingredientCount);
             nameInput.classList.add("delete-helper");
 
             // Ingredient Specification ID
-            var specInputHidden = createInput("hidden", "SpecIDHidden");
+            var specInputHidden = createInput("hidden", "SpecIDHidden", ingredientCount);
             specInputHidden.value = "-19";   // default
 
             // delete Button
@@ -222,36 +182,13 @@
             });
 
             // Add inputs to cells
-            sectionCell.appendChild(createInput("text", "Section"));
+            sectionCell.appendChild(createInput("text", "Section", ingredientCount));
             nameCell.appendChild(specInputHidden);
             nameCell.appendChild(nameInput);
-            metricCell.appendChild(createInput("number", "Metric"));
-            metricNameCell.appendChild(createInput("text", "MetricName"));
+            metricCell.appendChild(createInput("number", "Metric", ingredientCount));
+            metricNameCell.appendChild(createInput("text", "MetricName", ingredientCount));
             deleteCell.appendChild(deleteButton);
-        }
-        
-        function createInput(type = "text", nameAndID = "Default") {
-            var input = document.createElement("input");
-            input.type = type;
-            input.name = nameAndID + "_" + ingredientCount.toString();
-            input.id = nameAndID + "_" + ingredientCount.toString();
-
-            return input;
         }
 
         // #endregion
-
-        function validatePhoto(inputElement) {
-            const file = inputElement.files[0];
-            if (file) {
-                const fileType = file['type'];
-                const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
-
-                if (!validImageTypes.includes(fileType)) {
-                    alert('Please upload a valid image.');
-                    inputElement.value = '';  // Clear the input
-                }
-            }
-        }
-
     </script>
