@@ -3,6 +3,18 @@
 
 // Write your JavaScript code.
 
+// Places a photo into an image input - Recipe Create and Edit
+function manageUploadedPhoto(file, e) {
+    if (validatePhoto(file)) {
+        var reader = new FileReader();
+        reader.onload = function () {
+            var output = document.getElementById('recipePhotoDisplay');
+            output.src = reader.result;
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    }
+}
+
 // Checks whether the uploaded file is a photo
 function validatePhoto(inputElement) {
     const file = inputElement.files[0];
@@ -14,7 +26,9 @@ function validatePhoto(inputElement) {
             //alert('Please upload a valid image (.jpeg, .png, .gif).');
             showModal("Please upload a valid image. Acceptable formats: .jpeg, .png, .gif.");
             inputElement.value = '';  // Clear the input
+            return false;
         }
+        return true;
     }
 }
 

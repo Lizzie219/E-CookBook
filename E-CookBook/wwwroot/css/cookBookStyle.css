@@ -55,3 +55,22 @@
     background-color: #4D967A;
     color: #FFFFF6;
 }
+
+.recipe-photo-styles {
+    width: 100%;
+    height: 250px;
+    border: 3px solid #482F1D;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    object-fit: contain;
+    object-position: center;
+    background-color: #E5C38A;
+}
+
+.image-placeholder #uploadedImage {
+    width: 100%; /* Ensures the image stretches to the container's width */
+    height: 100%; /* Ensures the image stretches to the container's height */
+    object-fit: contain; /* Resizes the image to fit within the container while maintaining its aspect ratio */
+    object-position: center; /* Aligns the image centrally in the container */
+}
