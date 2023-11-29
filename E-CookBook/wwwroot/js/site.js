@@ -11,10 +11,17 @@ function validatePhoto(inputElement) {
         const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
         if (!validImageTypes.includes(fileType)) {
-            alert('Please upload a valid image (.jpeg, .png, .gif).');
+            //alert('Please upload a valid image (.jpeg, .png, .gif).');
+            showModal("Please upload a valid image. Acceptable formats: .jpeg, .png, .gif.");
             inputElement.value = '';  // Clear the input
         }
     }
+}
+
+function showModal(message) {
+    const alertModal = new bootstrap.Modal(document.getElementById('customModal'));
+    document.querySelector('#customModal .modal-body').textContent = message;
+    alertModal.show();
 }
 
 // Creates an input - Recipe Create and Edit, ingredients
