@@ -44,14 +44,15 @@ function createInput(type = "text", nameAndID = "Default", ingredientCounter) {
     input.type = type;
     input.name = nameAndID + "_" + ingredientCounter.toString();
     input.id = nameAndID + "_" + ingredientCounter.toString();
+    input.classList.add("form-control");
 
     return input;
 }
 
 // Handles Tag inputs - Recipe Create and Edit, tags
-function tagInputKeyDown(e) {
+function tagInputButtonPushed() {
     var tagInput = document.getElementById('tagInput');
-    if (e.key === 'Enter' && tagInput.value.trim()) {
+    if (tagInput.value.trim()) {
         addTag(tagInput.value.trim());
         tagInput.value = '';
     }
@@ -91,4 +92,10 @@ function loadBaseIngredientValues(existingIngredient, ingredientCounter) {
     document.getElementById("IngredientName_" + ingredientCounter.toString()).value = existingIngredient.IngredientName;
     document.getElementById("Metric_" + ingredientCounter.toString()).value = existingIngredient.Metric;
     document.getElementById("MetricName_" + ingredientCounter.toString()).value = existingIngredient.MetricName;
+}
+
+// resizes the instructions textbox
+function resizeInstructionsBox(textbox) {
+    textbox.style.height = 'auto';
+    textbox.style.height = textbox.scrollHeight + 'px';
 }

@@ -36,11 +36,16 @@
                     <label asp-for="Portion" class="control-label"></label>
                     <input asp-for="Portion" class="form-control" />
                     <span asp-validation-for="Portion" class="text-danger"></span>
+                    <div id="portionHelp" class="form-text text-end details-color">Estimated number of adults the recipe serves</div>
                 </div>
                 <div class="form-group">
                     <label asp-for="CookingTime" class="control-label"></label>
-                    <input asp-for="CookingTime" class="form-control" />
+                    <div class="input-group mb-3">
+                        <input asp-for="CookingTime" class="form-control" />
+                        <span class="input-group-text">minutes</span>
+                    </div>
                     <span asp-validation-for="CookingTime" class="text-danger"></span>
+                    <div id="cookingTimeHelp" class="form-text text-end details-color">Cooking time estimate in minutes</div>
                 </div>
                 <div class="form-group">
                     <label asp-for="Source" class="control-label"></label>
@@ -48,8 +53,9 @@
                     <span asp-validation-for="Source" class="text-danger"></span>
                 </div>
                 <div>
+                    <label asp-for="Ingredients" class="control-label"></label>
                     <input id="IngredientCount" name="IngredientCount" hidden />
-                    <table id="ingredientsTable">
+                    <table class="ingredients-table table" id="ingredientsTable">
                         <tr>
                             <th>Section</th>
                             <th>Quantiy</th>
@@ -58,12 +64,18 @@
                             <th></th>
                         </tr>
                     </table>
-                    <div class="form-group">
+                    <br />
+                    <div class="form-group text-end">
                         <button id="addIngrButton" type="button" onclick="addIngredientSpecification()">Add Ingredient</button>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label asp-for="Instructions" class="control-label"></label>
+                    <textarea asp-for="Instructions" class="form-control" oninput="resizeInstructionsBox(this)"></textarea>
+                    <span asp-validation-for="Instructions" class="text-danger"></span>
+                </div>
             </div>
-            <div class="col">
+            <div class="col col-3">
                 <div class="form-group">
                     <div class="row">
                         <div class="col-12 d-flex justify-content-center">
@@ -74,13 +86,12 @@
                     <input id="RecipePhoto" name="RecipePhoto" type="file" accept="image/jpeg, image/png, image/gif" class="form-control" onchange="manageUploadedPhoto(this, event)" />
                 </div>
                 <div class="form-group">
-                    <label asp-for="Instructions" class="control-label"></label>
-                    <textarea asp-for="Instructions" class="form-control"></textarea>
-                    <span asp-validation-for="Instructions" class="text-danger"></span>
-                </div>
-                <div class="form-group">
                     <label asp-for="Tags" class="control-label"></label>
                     <input asp-for="Tags" class="form-control" hidden />
+                    <div class="input-group mb-3">
+                        <input id="tagInput" type="text" class="form-control" placeholder="Add a tag..." aria-describedby="tagButton">
+                        <button type="button" id="tagButton" onclick="tagInputButtonPushed()">Add</button>
+                    </div>
                     <div id="tagBadgeList">
                     </div>
                 </div>
@@ -88,20 +99,11 @@
         </div>
         <br />
         <div class="form-group">
-            <input type="submit" value="Create" />
+            <input class="form-submit-input" type="submit" value="Submit" />
         </div>
         <br />
         <br />
     </form>
-    <div>
-        <div class="form-group">
-            <input type="text" id="tagInput" onkeydown="tagInputKeyDown(event)" placeholder="Add a tag...">
-        </div>
-    </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
