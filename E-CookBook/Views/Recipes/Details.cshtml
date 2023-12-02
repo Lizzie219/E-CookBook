@@ -6,86 +6,108 @@
     List<IngredientViewModel> Ingredients = ViewBag.Ingredients;
 }
 
-<h1>Details</h1>
+<h1>@Html.DisplayFor(model => model.Name)</h1>
 
 <div>
-    <h4>Recipe</h4>
     <hr />
-    @if (ViewBag.TagList != null)
-    {
-        @foreach (var item in ViewBag.TagList)
-        {
-            <span class="badge rounded-pill text-bg-primary badge-background-color">@item</span>
-        }
-    }
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.CookingTime)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.CookingTime)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Portion)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.EditorFor(model => model.Portion)
-            <button onclick="resetPortion()">Reset</button>
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Instructions)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Instructions)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Source)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Source)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Category.Name)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Category.Name)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.PriceCategory.Name)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.PriceCategory.Name)
-        </dd>
-    </dl>
-    <br />
-    <label>Ingredients</label>
-    <div class="row">
-        @foreach (var ingredientSpec in Ingredients)
-        {
-            <div class="col-sm-2">
-                <label>@ingredientSpec.Section</label>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col display-label-style">
+                        @Html.DisplayNameFor(model => model.Portion)
+                    </div>
+                    <div class="col text-end">
+                        @Html.EditorFor(model => model.Portion)
+                        <button onclick="resetPortion()">Reset</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="display-label-style">Ingredients</label>
+                    <div class="row">
+                        @foreach (var ingredientSpec in Ingredients)
+                        {
+                            <div class="col-sm-2 details-color">
+                                <label>@ingredientSpec.Section</label>
+                            </div>
+                            <div class="col-sm-10">
+                                <label class="scaling-product">@ingredientSpec.Metric.ToString()</label>
+                                <label>@(ingredientSpec.MetricName + "")</label>
+                                <label>@ingredientSpec.IngredientName</label>
+                            </div>
+                        }
+                    </div>
+                    <div class="text-end">
+                        <a class="text-end a-recipe" asp-action="GenerateShoppingList" asp-route-recipeID="@Model.ID">Generate Shopping list</a>
+                    </div>
+                </div>
+                <div>
+                    <div class="display-label-style">
+                        @Html.DisplayNameFor(model => model.Instructions)
+                    </div>
+                    <div class="details-color">
+                        @Html.DisplayFor(model => model.Instructions)
+                    </div>
+                </div>
+                
             </div>
-            <div class="col-sm-10">
-                <label class="scaling-product">@ingredientSpec.Metric.ToString()</label>
-                <label>@(ingredientSpec.MetricName + "")</label>
-                <label>@ingredientSpec.IngredientName</label>
+            <div class="col col-4">
+                <div class="col-12 d-flex justify-content-center">
+                    <img id="recipePhotoDisplay" src="@Url.Content(ViewBag.PhotoPath)" alt="Image of the result" class="recipe-photo-styles" />
+                </div>
+                <div>
+                    @if (ViewBag.TagList != null)
+                    {
+                        @foreach (var item in ViewBag.TagList)
+                        {
+                            <span class="badge rounded-pill text-bg-primary badge-background-color">@item</span>
+                        }
+                    }
+                </div>           
+                <div>
+                    <div class="display-label-style">
+                        @Html.DisplayNameFor(model => model.CookingTime)
+                    </div>
+                    <div class="details-color">
+                        @Html.DisplayFor(model => model.CookingTime)
+                        <span> minutes</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="display-label-style">
+                        @Html.DisplayNameFor(model => model.Category.Name)
+                    </div>
+                    <div class="details-color">
+                        @Html.DisplayFor(model => model.Category.Name)
+                    </div>
+                </div>
+                <div>
+                    <div class="display-label-style">
+                        @Html.DisplayNameFor(model => model.PriceCategory.Name)
+                    </div>
+                    <div class="details-color">
+                        @Html.DisplayFor(model => model.PriceCategory.Name)
+                    </div>
+                </div>
+                <div>
+                    <div class="display-label-style">
+                        @Html.DisplayNameFor(model => model.Source)
+                    </div>
+                    <div class="text-break details-color">
+                        @Html.DisplayFor(model => model.Source)
+                    </div>
+                </div>
             </div>
-        }
+        </div>
     </div>
+    @*
+
+    *@
 </div>
 <br />
 <div>
-    <a asp-action="GenerateShoppingList" asp-route-recipeID="@Model.ID">Generate Shopping list</a>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.ID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a class="a-recipe" asp-action="Edit" asp-route-id="@Model?.ID">Edit</a> |
+    <a class="a-recipe" asp-action="Index">Back to List</a>
 </div>
 <script>
     const initialPortion = @Html.Raw(JsonConvert.SerializeObject(Model?.Portion));

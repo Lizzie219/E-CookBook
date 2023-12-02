@@ -87,7 +87,7 @@
 }
 
 .form-control::file-selector-button {
-    background-color: #4D967A; /* Bootstrap primary color for example */
+    background-color: #4D967A;
     color: #FFFFF6;
     border: 1px solid #4D967A;
     border-radius: .25rem;
@@ -97,7 +97,7 @@
 }
 
 .form-control:hover::file-selector-button {
-    background-color: #FFFFFF !important; /* Darker shade for hover effect */
+    background-color: #FFFFFF !important;
     border-color: #FFFFFF !important;
     color: #4D967A !important;
 }
@@ -106,3 +106,20 @@
     background-color: white;
     color: #212529;
 }
+
+.display-label-style{
+    font-size: 25px;
+}
+
+.a-recipe, .a-recipe:active, .a-recipe:visited {
+    background-color: #4D967A;
+    color: #FFFFF6;
+    padding: 5px 12px;
+    border-radius: 12px;
+    text-decoration: none;
+}
+
+    .a-recipe:hover {
+        color: #212529;
+        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+    }

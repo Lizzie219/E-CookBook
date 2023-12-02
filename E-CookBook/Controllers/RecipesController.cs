@@ -116,6 +116,8 @@ namespace E_CookBook.Controllers
 
             ViewBag.Ingredients = ingredients;
             ViewBag.TagList = recipe.Tags != null ? recipe.Tags.Split("|and|", StringSplitOptions.RemoveEmptyEntries).ToList() : null;
+            ViewBag.PhotoPath = !string.IsNullOrEmpty(recipe.PhotoLocation) ? "~/lib/RecipePictures/" + recipe.PhotoLocation : "~/lib/Images/NoPhoto.png";
+
             return View(recipe);
         }
         public IActionResult CreateWithOCR(string ingredients, string instructions)
@@ -401,7 +403,7 @@ namespace E_CookBook.Controllers
             Recipe recipe = _context.Recipe.Find(recipeID);
             if (recipe != null)
             {
-                string list = "Ingredients\n\n";
+                string list = "Ingredients for " + recipe.Name + "\n";
                 string section = "";
                 foreach (var ingredient in recipe.Ingredients)
                 {
