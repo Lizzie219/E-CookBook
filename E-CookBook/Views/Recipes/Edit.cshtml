@@ -6,90 +6,105 @@
     List<IngredientViewModel> existingIngredients = (List<IngredientViewModel>)ViewBag.ExistingIngredients;
 }
 
-<h1>Edit</h1>
+<h1>Edit a Recipe</h1>
 
-<h4>Recipe</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="ID" />
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label class="control-label">Add a photo</label>
-                <input id="RecipePhoto" name="RecipePhoto" type="file" accept="image/jpeg, image/png, image/gif" class="form-control" onchange="validatePhoto(this)" />
-            </div>
-            <div class="form-group">
-                <label asp-for="CookingTime" class="control-label"></label>
-                <input asp-for="CookingTime" class="form-control" />
-                <span asp-validation-for="CookingTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Portion" class="control-label"></label>
-                <input asp-for="Portion" class="form-control" />
-                <span asp-validation-for="Portion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Instructions" class="control-label"></label>
-                <textarea asp-for="Instructions" class="form-control"></textarea>
-                <span asp-validation-for="Instructions" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Source" class="control-label"></label>
-                <input asp-for="Source" class="form-control" />
-                <span asp-validation-for="Source" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Category.Name" class="control-label"></label>
-                <select asp-for="CategoryID" class="form-control" asp-items="ViewBag.Categories">
-                    <option value="" disabled>Select an Option</option>
-                </select>
-                <span asp-validation-for="CategoryID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PriceCategory.Name" class="control-label"></label>
-                <select asp-for="PriceCategoryID" class="form-control" asp-items="ViewBag.PriceCategories">
-                    <option value="" disabled>Select an Option</option>
-                </select>
-                <span asp-validation-for="PriceCategoryID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Tags" class="control-label"></label>
-                <input asp-for="Tags" class="form-control" hidden />
-                <div id="tagBadgeList">
+<div class="container">
+    <form asp-action="Edit" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="ID" />
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Category.Name" class="control-label"></label>
+                    <select asp-for="CategoryID" class="form-control" asp-items="ViewBag.Categories">
+                        <option value="" disabled>Select an Option</option>
+                    </select>
+                    <span asp-validation-for="CategoryID" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PriceCategory.Name" class="control-label"></label>
+                    <select asp-for="PriceCategoryID" class="form-control" asp-items="ViewBag.PriceCategories">
+                        <option value="" disabled selected>Select an Option</option>
+                    </select>
+                    <span asp-validation-for="PriceCategoryID" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Portion" class="control-label"></label>
+                    <input asp-for="Portion" class="form-control" />
+                    <span asp-validation-for="Portion" class="text-danger"></span>
+                    <div id="portionHelp" class="form-text text-end details-color">Estimated number of adults the recipe serves</div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CookingTime" class="control-label"></label>
+                    <div class="input-group mb-3">
+                        <input asp-for="CookingTime" class="form-control" />
+                        <span class="input-group-text">minutes</span>
+                    </div>
+                    <span asp-validation-for="CookingTime" class="text-danger"></span>
+                    <div id="cookingTimeHelp" class="form-text text-end details-color">Cooking time estimate in minutes</div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Source" class="control-label"></label>
+                    <input asp-for="Source" class="form-control" />
+                    <span asp-validation-for="Source" class="text-danger"></span>
+                </div>
+                <div>
+                    <label asp-for="Ingredients" class="control-label"></label>
+                    <input id="IngredientCount" name="IngredientCount" hidden />
+                    <table class="ingredients-table table" id="ingredientsTable">
+                        <tr>
+                            <th>Section</th>
+                            <th>Quantiy</th>
+                            <th>Metric</th>
+                            <th>Name</th>
+                            <th></th>
+                        </tr>
+                    </table>
+                    <br />
+                    <div class="form-group text-end">
+                        <button id="addIngrButton" type="button" onclick="addIngredientSpecification()">Add Ingredient</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Instructions" class="control-label"></label>
+                    <textarea asp-for="Instructions" class="form-control" oninput="resizeInstructionsBox(this)"></textarea>
+                    <span asp-validation-for="Instructions" class="text-danger"></span>
                 </div>
             </div>
-            <input id="IngredientCount" name="IngredientCount" hidden />
-            <table id="ingredientsTable">
-                <tr>
-                    <th>Section</th>
-                    <th>Quantiy</th>
-                    <th>Metric</th>
-                    <th>Name</th>
-                    <th></th>
-                </tr>
-            </table>
-            <br />
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+            <div class="col col-3">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-12 d-flex justify-content-center">
+                            <img id="recipePhotoDisplay" src="@Url.Content(ViewBag.PhotoPath)" alt="Image of the result" class="recipe-photo-styles" />
+                        </div>
+                    </div>
+                    <label class="control-label">Change the photo</label>
+                    <input id="RecipePhoto" name="RecipePhoto" type="file" accept="image/jpeg, image/png, image/gif" class="form-control" onchange="manageUploadedPhoto(this, event)" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Tags" class="control-label"></label>
+                    <input asp-for="Tags" class="form-control" hidden />
+                    <div class="input-group mb-3">
+                        <input id="tagInput" type="text" class="form-control" placeholder="Add a tag..." aria-describedby="tagButton">
+                        <button type="button" id="tagButton" onclick="tagInputButtonPushed()">Add</button>
+                    </div>
+                    <div id="tagBadgeList">
+                    </div>
+                </div>
             </div>
-        </form>
-        <div class="form-group">
-            <input type="text" id="tagInput" onkeydown="tagInputKeyDown(event)" placeholder="Add a tag...">
         </div>
+        <br />
         <div class="form-group">
-            <button id="addIngrButton" onclick="addIngredientSpecification()">Add Ingredient</button>
+            <input type="submit" value="Save" class="form-submit-input" />
         </div>
-    </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
+        <br />
+    </form>
 </div>
 
 @section Scripts {
@@ -106,9 +121,10 @@
         function afterLoad() {
             manageTags();
             manageIngredients();
+            resizeInstructionsBox(document.getElementById("Instructions"));
         }
-
-        // #region Tags       
+        
+        // #region Tags
         function manageTags() {
             var tags = @Html.Raw(JsonConvert.SerializeObject(TagList));
             if (tags != null) {
@@ -191,5 +207,5 @@
             deleteCell.appendChild(deleteButton);
         }
 
-        // #endregion
+                                // #endregion
     </script>

@@ -254,6 +254,7 @@ namespace E_CookBook.Controllers
             ViewBag.Categories = new SelectList(_context.Category, "ID", "Name");
             ViewBag.PriceCategories = new SelectList(_context.PriceCategory, "ID", "Name");
             ViewBag.TagList = recipe.Tags != null ? recipe.Tags.Split("|and|", StringSplitOptions.RemoveEmptyEntries).ToArray() : null;
+            ViewBag.PhotoPath = !string.IsNullOrEmpty(recipe.PhotoLocation) ? "~/lib/RecipePictures/" + recipe.PhotoLocation : "~/lib/Images/NoPhoto.png";
 
             return View(recipe);
         }
