@@ -49,7 +49,7 @@
                         @Html.DisplayFor(model => model.Instructions)
                     </div>
                 </div>
-                
+
             </div>
             <div class="col col-4">
                 <div class="col-12 d-flex justify-content-center">
@@ -63,7 +63,7 @@
                             <span class="badge rounded-pill text-bg-primary badge-background-color">@item</span>
                         }
                     }
-                </div>           
+                </div>
                 <div>
                     <div class="display-label-style">
                         @Html.DisplayNameFor(model => model.CookingTime)
@@ -100,14 +100,17 @@
             </div>
         </div>
     </div>
-    @*
-
-    *@
 </div>
 <br />
-<div>
-    <a class="a-recipe" asp-action="Edit" asp-route-id="@Model?.ID">Edit</a> |
-    <a class="a-recipe" asp-action="Index">Back to List</a>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <a class="a-recipe" asp-action="Edit" asp-route-id="@Model?.ID">Edit</a>
+        </div>
+        <div class="col text-end">
+            <a class="a-recipe" asp-action="Index">Back to List</a>
+        </div>
+    </div>
 </div>
 <script>
     const initialPortion = @Html.Raw(JsonConvert.SerializeObject(Model?.Portion));

@@ -3,6 +3,11 @@
     color: #FFFFF6;
 }
 
+.danger-badge-background-color {
+    background-color: #990603;
+    color: #FFFFF6;
+}
+
 .layout-font-color {
     color: #FFFFF6 !important;
 }
@@ -47,7 +52,7 @@
 }
 
 .home-images-text-base:hover, .penn-red-color {
-    color: #990603;
+    color: #990603 !important;
 }
 
 .footer-style {
@@ -123,3 +128,15 @@
         color: #212529;
         box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
     }
+
+.danger-form-submit-input {
+    background-color: #990603;
+    color: #FFFFF6;
+    padding: 5px 12px;
+    border-radius: 12px;
+}
+
+    .danger-form-submit-input:hover {
+        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+    }
+

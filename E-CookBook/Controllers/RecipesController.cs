@@ -9,8 +9,6 @@ using E_CookBook.Data;
 using E_CookBook.ViewModels;
 using E_CookBook.Models;
 using X.PagedList;
-using Microsoft.AspNetCore.Cors.Infrastructure;
-using E_CookBook.OCR;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Text;
@@ -98,23 +96,8 @@ namespace E_CookBook.Controllers
             {
                 return NotFound();
             }
-            List<IngredientViewModel> ingredients = new List<IngredientViewModel>();
-            List<IngredientSpecification> ingredientsofCurrentRecipe = _context.IngredientSpecification.Where(s => s.RecipeID == id).ToList();
-            string section = "";
-            foreach (var ingredient in ingredientsofCurrentRecipe)
-            {
-                if (!string.IsNullOrEmpty(ingredient.Section) && section != ingredient.Section)
-                {
-                    section = ingredient.Section;
-                    ingredients.Add(new IngredientViewModel(ingredient.Quantity, ingredient.QuantityMetric.Name, ingredient.Ingredient.Name, ingredient.ID, section));
-                }
-                else
-                {
-                    ingredients.Add(new IngredientViewModel(ingredient.Quantity, ingredient.QuantityMetric.Name, ingredient.Ingredient.Name, ingredient.ID, ""));
-                }
-            }
-
-            ViewBag.Ingredients = ingredients;
+            
+            ViewBag.Ingredients = LoadIngredientsDetails((int)id);
             ViewBag.TagList = recipe.Tags != null ? recipe.Tags.Split("|and|", StringSplitOptions.RemoveEmptyEntries).ToList() : null;
             ViewBag.PhotoPath = !string.IsNullOrEmpty(recipe.PhotoLocation) ? "~/lib/RecipePictures/" + recipe.PhotoLocation : "~/lib/Images/NoPhoto.png";
 
@@ -172,9 +155,7 @@ namespace E_CookBook.Controllers
             return View();
         }
 
-        // POST: Recipes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Recipes/Create       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("ID,Name,CookingTime,Portion,Instructions,Source,Tags,CategoryID,PriceCategoryID")] Recipe recipe)
@@ -184,12 +165,7 @@ namespace E_CookBook.Controllers
                 #region Tags              
                 if (!string.IsNullOrEmpty(recipe.Tags))
                 {
-                    List<string> tags = recipe.Tags.Split("|and|", StringSplitOptions.RemoveEmptyEntries).Distinct().ToList();
-                    recipe.Tags = "";
-                    foreach (var item in tags)
-                    {
-                        recipe.Tags += item + "|and|";
-                    }
+                    recipe.Tags = LoadTags(recipe.Tags);
                 }
                 #endregion
 
@@ -201,11 +177,7 @@ namespace E_CookBook.Controllers
                 {
                     // Only one file will be uploaded
                     recipe.PhotoLocation = recipe.ID + "_" + Request.Form.Files[0].FileName;
-
-                    using (var fileStream = new FileStream(Path.Combine(recipePicturesDir, recipe.PhotoLocation), FileMode.Create))
-                    {
-                        Request.Form.Files[0].CopyTo(fileStream);
-                    }
+                    LoadRecipePhoto(recipe.PhotoLocation);
                 }
                 #endregion
                 #region Ingredients
@@ -261,9 +233,7 @@ namespace E_CookBook.Controllers
             return View(recipe);
         }
 
-        // POST: Recipes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Recipes/Edit/5       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, [Bind("ID,Name,CookingTime,Portion,Instructions,Source,Tags,CategoryID,PriceCategoryID")] Recipe recipe)
@@ -281,12 +251,7 @@ namespace E_CookBook.Controllers
                     // tags get duplicated in the Edit process, so in the following only the distinct tags are saved
                     if (!string.IsNullOrEmpty(recipe.Tags))
                     {
-                        List<string> tags = recipe.Tags.Split("|and|", StringSplitOptions.RemoveEmptyEntries).Distinct().ToList();
-                        recipe.Tags = "";
-                        foreach (var item in tags)
-                        {
-                            recipe.Tags += item + "|and|";
-                        }
+                        recipe.Tags = LoadTags(recipe.Tags);
                     }
                     #endregion
                     #region PhotoLocation                
@@ -294,11 +259,7 @@ namespace E_CookBook.Controllers
                     {
                         // Only one file will be uploaded
                         recipe.PhotoLocation = id + "_" + Request.Form.Files[0].FileName;
-
-                        using (var fileStream = new FileStream(Path.Combine(recipePicturesDir, recipe.PhotoLocation), FileMode.Create))
-                        {
-                            Request.Form.Files[0].CopyTo(fileStream);
-                        }
+                        LoadRecipePhoto(recipe.PhotoLocation);
                     }
                     #endregion
 
@@ -365,11 +326,16 @@ namespace E_CookBook.Controllers
             var recipe = await _context.Recipe
                 .Include(r => r.Category)
                 .Include(r => r.PriceCategory)
+                .Include(r => r.Ingredients)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (recipe == null)
             {
                 return NotFound();
             }
+            
+            ViewBag.Ingredients = LoadIngredientsDetails((int)id);
+            ViewBag.TagList = recipe.Tags != null ? recipe.Tags.Split("|and|", StringSplitOptions.RemoveEmptyEntries).ToList() : null;
+            ViewBag.PhotoPath = !string.IsNullOrEmpty(recipe.PhotoLocation) ? "~/lib/RecipePictures/" + recipe.PhotoLocation : "~/lib/Images/NoPhoto.png";
 
             return View(recipe);
         }
@@ -393,11 +359,7 @@ namespace E_CookBook.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool RecipeExists(int id)
-        {
-            return (_context.Recipe?.Any(e => e.ID == id)).GetValueOrDefault();
-        }
-
+        #region Extra public functions
         public ActionResult GenerateShoppingList(int recipeID)
         {
             Recipe recipe = _context.Recipe.Find(recipeID);
@@ -420,7 +382,6 @@ namespace E_CookBook.Controllers
             }
             return NotFound();
         }
-
         public async Task<List<string>> AutocompleteLists(string term, string elementName)
         {
             List<string> list = new List<string>();
@@ -445,5 +406,50 @@ namespace E_CookBook.Controllers
             }
             return list;
         }
+        #endregion
+        #region Helper private functions 
+        private bool RecipeExists(int id)
+        {
+            return (_context.Recipe?.Any(e => e.ID == id)).GetValueOrDefault();
+        }
+
+        private List<IngredientViewModel> LoadIngredientsDetails(int id)
+        {
+            List<IngredientViewModel> ingredients = new List<IngredientViewModel>();
+            List<IngredientSpecification> ingredientsofCurrentRecipe = _context.IngredientSpecification.Where(s => s.RecipeID == id).ToList();
+            string section = "";
+            foreach (var ingredient in ingredientsofCurrentRecipe)
+            {
+                if (!string.IsNullOrEmpty(ingredient.Section) && section != ingredient.Section)
+                {
+                    section = ingredient.Section;
+                    ingredients.Add(new IngredientViewModel(ingredient.Quantity, ingredient.QuantityMetric.Name, ingredient.Ingredient.Name, ingredient.ID, section));
+                }
+                else
+                {
+                    ingredients.Add(new IngredientViewModel(ingredient.Quantity, ingredient.QuantityMetric.Name, ingredient.Ingredient.Name, ingredient.ID, ""));
+                }
+            }
+            return ingredients;
+        }
+        private string LoadTags(string Tags)
+        {
+            List<string> tags = Tags.Split("|and|", StringSplitOptions.RemoveEmptyEntries).Distinct().ToList();
+            string newTags = "";
+            foreach (var item in tags)
+            {
+                newTags += item + "|and|";
+            }
+            return newTags;
+        }
+        private void LoadRecipePhoto(string fileName)
+        {
+            using (var fileStream = new FileStream(Path.Combine(recipePicturesDir, fileName), FileMode.Create))
+            {
+                Request.Form.Files[0].CopyTo(fileStream);
+            }
+        }
+
+        #endregion
     }
 }
