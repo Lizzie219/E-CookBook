@@ -418,5 +418,30 @@ namespace E_CookBook.Controllers
             }
             return NotFound();
         }
+
+        public async Task<List<string>> AutocompleteLists(string term, string elementName)
+        {
+            List<string> list = new List<string>();
+            switch (elementName)
+            {
+                case "tagInput":
+                    await _context.Recipe.ForEachAsync(recipe =>
+                    {
+                        var tags = recipe.Tags?.Split("|and|", StringSplitOptions.RemoveEmptyEntries).Distinct().ToList();
+                        tags?.ForEach(t => list.Add(t));
+                    });
+                    list = list.Where(tag => tag.Contains(term.ToLower())).Distinct().ToList();
+                    break;
+                case "ingredientName":
+                    list = _context.Ingredient.Where(ing => !string.IsNullOrEmpty(ing.Name) && ing.Name.ToLower().Contains(term.ToLower())).Select(ing => ing.Name).ToList();
+                    break;
+                case "quantityMetric":
+                    list = _context.QuantityMetric.Where(m => !string.IsNullOrEmpty(m.Name) && m.Name.ToLower().Contains(term.ToLower())).Select(m => m.Name).ToList();
+                    break;
+                default:
+                    break;
+            }
+            return list;
+        }
     }
 }

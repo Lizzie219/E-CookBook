@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="~/css/cookBookStyle.css" type="text/css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/cropper.min.css" />
+    <link rel="stylesheet" href="~/css/jquery-ui.css"/>
     <link rel="icon" type="image/x-icon" href="~/lib/Images/E-CookBookLogo.png">
 </head>
 <body>
@@ -26,7 +27,7 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link layout-font-color" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>                                              
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle layout-font-color" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Create a Recipe
@@ -39,6 +40,9 @@
                         <li class="nav-item">
                             <a class="nav-link layout-font-color" asp-area="" asp-controller="Recipes" asp-action="Index">Browse Recipes</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link layout-font-color" asp-area="" asp-controller="Home" asp-action="About">About</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -49,6 +53,7 @@
     <script src="~/js/jquery-3.7.1.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/cropper.min.js"></script>
+    <script src="~/js/jquery-ui.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 
 

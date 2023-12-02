@@ -99,3 +99,10 @@ function resizeInstructionsBox(textbox) {
     textbox.style.height = 'auto';
     textbox.style.height = textbox.scrollHeight + 'px';
 }
+
+// provides the elements for the autocomplete function
+function fetchDataforAutocomplete(term, elementName) {
+    return fetch(`/Recipes/AutocompleteLists?term=${term}&elementName=${elementName}`)
+        .then(response => response.json())
+        .catch(error => console.error('Error:', error));
+}

@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="RecipePictures\**" />
+    <Content Remove="RecipePictures\**" />
+    <EmbeddedResource Remove="RecipePictures\**" />
+    <None Remove="RecipePictures\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="wwwroot\lib\Images\CreateRecipeLogo.png" />
     <None Remove="wwwroot\lib\Images\E-CookBookLogo.png" />
     <None Remove="wwwroot\lib\Images\FindRecipeLogo.png" />
@@ -23,10 +30,6 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.16" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="8.4.7" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="RecipePictures\" />
   </ItemGroup>
 
   <ItemGroup>
