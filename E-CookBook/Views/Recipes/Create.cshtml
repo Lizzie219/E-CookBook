@@ -42,7 +42,7 @@
                     <label asp-for="CookingTime" class="control-label"></label>
                     <div class="input-group mb-3">
                         <input asp-for="CookingTime" class="form-control" />
-                        <span class="input-group-text">minutes</span>
+                        <span class="input-group-text cooking-time-helper">minutes</span>
                     </div>
                     <span asp-validation-for="CookingTime" class="text-danger"></span>
                     <div id="cookingTimeHelp" class="form-text text-end details-color">Cooking time estimate in minutes</div>
@@ -64,7 +64,6 @@
                             <th></th>
                         </tr>
                     </table>
-                    <br />
                     <div class="form-group text-end">
                         <button id="addIngrButton" type="button" onclick="addIngredientSpecification()">Add Ingredient</button>
                     </div>

@@ -9,20 +9,31 @@
 </div>
 <h2>Create a Recipe with OCR</h2>
 <form asp-action="ProcessImages" enctype="multipart/form-data" id="uploadForm">
-    <div class="form-group">
-        <label for="recipeFile" class="form-label">Choose a photo to upload</label>
-        <input type="file" class="form-control" id="recipeFile" name="recipeFile" accept="image/jpeg, image/png, image/gif" onchange="validatePhoto(this)" />
-        <br />
-        <label hidden class="label-instructions">Select the Ingredients:</label>
-        <img id="ingredientsFileDisplay" src="#" alt="Image preview..." style="display:none;" />
+    <div class="container">
+        <div class="row">
+            <div class="form-group">
+                <label for="recipeFile" class="form-label">Choose a photo to upload</label>
+                <input type="file" class="form-control" id="recipeFile" name="recipeFile" accept="image/jpeg, image/png, image/gif" onchange="validatePhoto(this)" />
+                <br />
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label hidden class="label-instructions">Select the <span class="zomp-green-color">Ingredients</span> on the Image:</label>
+                    <img id="ingredientsFileDisplay" src="#" alt="Image preview..." style="display:none;" />
+                </div>
+            </div>
+            @*<br />
+            <br />*@
+            <div class="col">
+                <div class="form-group">
+                    <label hidden class="label-instructions">Select the <span class="penn-red-color">Instructions</span> on the Image:</label>
+                    <img id="instructionsFileDisplay" src="#" alt="Image preview..." style="display:none;" />
+                </div>
+            </div>
+
+        </div>
     </div>
-    <br />
-    <br />
-    <br />
-    <div class="form-group">
-        <label hidden class="label-instructions">Select the Instructions:</label>
-        <img id="instructionsFileDisplay" src="#" alt="Image preview..." style="display:none;" />
-    </div>
+
     <br />
     <button type="submit" id="submit" disabled>Submit</button>
 </form>

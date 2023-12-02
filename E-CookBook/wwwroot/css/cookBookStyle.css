@@ -46,7 +46,7 @@
     top: 34%;
 }
 
-.home-images-text-base:hover {
+.home-images-text-base:hover, .penn-red-color {
     color: #990603;
 }
 
@@ -80,4 +80,29 @@
 
 .details-color {
     color: #212529 !important;
+}
+
+.zomp-green-color {
+    color: #4D967A;
+}
+
+.form-control::file-selector-button {
+    background-color: #4D967A; /* Bootstrap primary color for example */
+    color: #FFFFF6;
+    border: 1px solid #4D967A;
+    border-radius: .25rem;
+    padding: .375rem .75rem;
+    margin-right: .375rem;
+    transition: background-color .15s ease-in-out, border-color .15s ease-in-out;
+}
+
+.form-control:hover::file-selector-button {
+    background-color: #FFFFFF !important; /* Darker shade for hover effect */
+    border-color: #FFFFFF !important;
+    color: #4D967A !important;
+}
+
+.cooking-time-helper {
+    background-color: white;
+    color: #212529;
 }
