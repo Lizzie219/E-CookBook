@@ -19,15 +19,13 @@
             <div class="col">
                 <div class="form-group">
                     <label hidden class="label-instructions">Select the <span class="zomp-green-color">Ingredients</span> on the Image:</label>
-                    <img id="ingredientsFileDisplay" src="#" alt="Image preview..." style="display:none;" />
+                    <img id="ingredientsFileDisplay" src="#" alt="Image preview..." style="display:none;max-width:100%;" />
                 </div>
             </div>
-            @*<br />
-            <br />*@
             <div class="col">
                 <div class="form-group">
                     <label hidden class="label-instructions">Select the <span class="penn-red-color">Instructions</span> on the Image:</label>
-                    <img id="instructionsFileDisplay" src="#" alt="Image preview..." style="display:none;" />
+                    <img id="instructionsFileDisplay" src="#" alt="Image preview..." style="display:none;max-width:100%;" />
                 </div>
             </div>
 
@@ -73,7 +71,7 @@
                         window[cropper].destroy();
                     }
                     window[cropper] = new Cropper(image, {
-                        // more cropper options could come here like ratios - may come in handy later
+                        // more cropper options could come here like ratios - may come in handy later                       
                     });
                 };
 
