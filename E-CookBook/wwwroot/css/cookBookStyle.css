@@ -55,12 +55,6 @@
     color: #990603 !important;
 }
 
-.footer-style {
-    min-height: 100px;
-    background-color: #4D967A;
-    color: #FFFFF6;
-}
-
 .recipe-photo-styles {
     width: 100%;
     height: 250px;
@@ -79,11 +73,12 @@
     object-fit: contain; /* Resizes the image to fit within the container while maintaining its aspect ratio */
     object-position: center; /* Aligns the image centrally in the container */
 }
+
 .ingredients-table {
     border: 2px solid #482F1D;
 }
 
-.details-color {
+.details-color, .text-muted {
     color: #212529 !important;
 }
 
@@ -112,7 +107,7 @@
     color: #212529;
 }
 
-.display-label-style{
+.display-label-style {
     font-size: 25px;
 }
 
@@ -140,3 +135,91 @@
         box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
     }
 
+.tags-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 5px normal;
+    max-height: 100%;
+    overflow-y: auto;
+    border: 1px solid #4D967A;
+    padding: 10px;
+}
+
+.card-body {
+    border-color: #4D967A;
+    border-radius: 2px;
+}
+
+/* for Chrome or Safari... */
+.form-range::-webkit-slider-thumb {
+    background: #4D967A;
+}
+/*for Edge*/
+.form-range::-ms-thumb {
+    background: #4D967A;
+}
+
+.form-check-input:checked {
+    background-color: #4D967A;
+    border-color: #4D967A;
+    color: #FFFFF6;
+}
+
+.form-check-input[type="radio"]:checked {
+    background-color: #4D967A;
+    border-color: #4D967A;
+}
+
+    .form-check-input[type="radio"]:checked::before {
+        background-color: #FFFFF6; /* Color of the inner dot */
+    }
+
+.page-item .page-link {
+    background-color: #4D967A;
+    border-color: #4D967A;
+    color: #FFFFF6;
+}
+
+.page-item.active .page-link {
+    background-color: #FFFFF6;
+    border-color: #4D967A;
+    color: #4D967A;
+}
+
+.page-item.disabled .page-link {
+    color: #FFFFF6; 
+    background-color: #E5C38A;
+    border-color: #4D967A;
+}
+
+.page-item:hover .page-link {
+    color: #4D967A; 
+    background-color: #FFFFF6; 
+    border-color: #4D967A;
+}
+.card-image-container {
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #E5C38A;
+}
+
+    .card-image-container img {
+        max-width: 100%;
+        max-height: 100%; 
+        height: auto; 
+        width: auto; 
+        object-fit: contain; 
+    }
+
+.footer {
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    min-height: 50px;
+    background-color: #4D967A;
+    color: #FFFFF6;
+}

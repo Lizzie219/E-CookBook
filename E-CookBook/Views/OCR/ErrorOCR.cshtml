@@ -6,10 +6,14 @@
     <label>Ooops, something went wrong</label>
     <label>@ViewBag.ErrorMessage</label>
 </div>
-<button>
-    @Html.ActionLink("OCR", "OCR", "OCR")
-</button>
 <br />
-<button>
-    @Html.ActionLink("Home", "Index", "Home")
-</button>
+<div class="container" style="margin-bottom:475px">
+    <div class="row">
+        <div class="col">
+            @Html.ActionLink("OCR", "OCR", "OCR", "", new { @class = "a-recipe"})
+        </div>
+        <div class="col">
+            @Html.ActionLink("Home", "Index", "Home", "", new { @class = "a-recipe"})
+        </div>
+    </div>
+</div>

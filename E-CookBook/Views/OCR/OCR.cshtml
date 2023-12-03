@@ -33,7 +33,7 @@
     </div>
 
     <br />
-    <button type="submit" id="submit" disabled>Submit</button>
+    <button type="submit" id="submit" disabled style="margin-bottom:343.5px;">Submit</button>
 </form>
 
 @section Scripts {
@@ -56,6 +56,7 @@
         function setUpCropper(input, image, cropper) {
             input.addEventListener('change', function (e) {
                 document.getElementById("submit").disabled = false;
+                document.getElementById("submit").style.marginBottom = "auto";
 
                 var labels = document.querySelectorAll('.label-instructions');
                 labels.forEach(function (label) {

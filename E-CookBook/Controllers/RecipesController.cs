@@ -71,11 +71,11 @@ namespace E_CookBook.Controllers
 
             if (option == "Title")
             {
-                return View(recipes.Where(r => string.IsNullOrEmpty(searchParameter) || r.Name.ToLower().Contains(searchParameter.ToLower())).ToList().ToPagedList(pageNumber ?? 1, 3));
+                return View(recipes.Where(r => string.IsNullOrEmpty(searchParameter) || r.Name.ToLower().Contains(searchParameter.ToLower())).ToList().ToPagedList(pageNumber ?? 1, 10));
             }
             else /*if (option == "Ingredient")*/
             {
-                return View(recipes.Where(r => string.IsNullOrEmpty(searchParameter) || (r.Ingredients.Count > 0 && r.Ingredients.Any(i => i.Ingredient.Name.ToLower().Contains(searchParameter.ToLower())))).ToList().ToPagedList(pageNumber ?? 1, 3));
+                return View(recipes.Where(r => string.IsNullOrEmpty(searchParameter) || (r.Ingredients.Count > 0 && r.Ingredients.Any(i => i.Ingredient.Name.ToLower().Contains(searchParameter.ToLower())))).ToList().ToPagedList(pageNumber ?? 1, 10));
             }
         }
 

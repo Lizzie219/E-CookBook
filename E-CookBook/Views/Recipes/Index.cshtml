@@ -10,69 +10,130 @@
     int? selectedCookingTime = ViewBag.SelectedCookingTime;
 }
 
-<h1>Index</h1>
+<h1>Recipes</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <form asp-action="Index" method="get">
-    <b> Search Option:</b>
-    <div>
-        <input class="form-check-input" type="radio" asp-for="@option" value="Title" checked />
-        <label class="form-check-label">Recipe Title</label>
+    <div class="container">
+        <b>Search Option:</b>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" asp-for="@option" value="Title" checked />
+            <label class="form-check-label">Recipe Title</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" asp-for="@option" value="Ingredient" />
+            <label class="form-check-label">Ingredient</label>
+        </div>
+        <div class="row">
+            <div class="col">
+                <input class="form-control" type="text" asp-for="@searchParameter" />
+            </div>
+            <div class="col">
+                <input class="form-submit-input" type="submit" name="submit" value="Search" />
+            </div>
+        </div>
     </div>
-    <div>
-        <input class="form-check-input" type="radio" asp-for="@option" value="Ingredient" />
-        <label class="form-check-label">Ingredient</label>
-    </div>
-    <input type="text" asp-for="@searchParameter" />
-    <input type="submit" name="submit" value="Search" />
     <br />
-    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filersDiv" aria-expanded="false" aria-controls="filersDiv">
+    <button type="button" data-bs-toggle="collapse" data-bs-target="#filersDiv" aria-expanded="false" aria-controls="filersDiv">
         Filters
     </button>
     <div class="collapse" id="filersDiv">
-        <div class="card card-body">
-            <div id="CategorySelect">
-                <label>Categories</label>
-                @foreach (var item in ViewBag.Categories)
-                {
-                    <div>
-                        <input type="checkbox" name="selectedCategories" value="@item" id="@item" />
-                        <label for="@item">@item</label>
+        <div class="card card-body container">
+            <div class="row">
+                <div class="col">
+                    <div id="CategorySelect">
+                        <label class="display-label-style zomp-green-color">Categories</label>
+                        @foreach (var item in ViewBag.Categories)
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="selectedCategories" value="@item" id="@item" />
+                                <label class="form-check-label" for="@item">@item</label>
+                            </div>
+                        }
                     </div>
-                }
-            </div>
-            <div id="PriceCategorySelect">
-                <label>Price Categories</label>
-                @foreach (var item in ViewBag.PriceCategories)
-                {
-                    <div>
-                        <input type="checkbox" name="selectedPriceCategories" value="@item" id="@item" />
-                        <label for="@item">@item</label>
+                    <div id="PriceCategorySelect">
+                        <label class="display-label-style zomp-green-color">Price Categories</label>
+                        @foreach (var item in ViewBag.PriceCategories)
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="selectedPriceCategories" value="@item" id="@item" />
+                                <label class="form-check-label" for="@item">@item</label>
+                            </div>
+                        }
                     </div>
-                }
-            </div>
-            <div id="TagsSelect">
-                <label>Tags</label>
-                @foreach (var item in ViewBag.Tags)
-                {
-                    <div>
-                        <input type="checkbox" name="selectedTags" value="@item" id="@item" />
-                        <label for="@item">@item</label>
+                    <div id="CookingTimeSelect">
+                        <label for="cookingTimeRange" class="zomp-green-color display-label-style">Maximum Cooking Time</label>
+                        <input type="range" class="form-range" min="1" max="@ViewBag.CookingTimeMax" id="cookingTimeRange" name="selectedCookingTime">
+                        <label>Value: <span id="cookingTimeRangeValue"></span> minutes</label>
                     </div>
-                }
+                </div>
+                <div class="col">
+                    <label class="display-label-style zomp-green-color">Tags</label>
+                    <div id="TagsSelect" class="tags-container">
+                        @foreach (var item in ViewBag.Tags)
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="selectedTags" value="@item" id="@item" />
+                                <label class="form-check-label" for="@item">@item</label>
+                            </div>
+                        }
+
+                    </div>
+                </div>
             </div>
-            <div id="CookingTimeSelect">
-                <label for="cookingTimeRange" class="form-label">Maximum Cooking Time</label>
-                <input type="range" class="form-range" min="1" max="@ViewBag.CookingTimeMax" id="cookingTimeRange" name="selectedCookingTime">
-                <label>Value: <span id="cookingTimeRangeValue"></span> minutes</label>
-            </div>
-            <input type="submit" name="submit" value="Filter" />
+            <br />
+            <input class="form-submit-input" type="submit" name="submit" value="Filter" />
         </div>
     </div>
 </form>
-<table class="table">
+<br />
+<div class="container">
+    @if (Model.Count() == 0)
+    {
+        <p>
+            No Recipe with the given parameters
+        </p>
+    }
+    else
+    {
+        @foreach (var item in Model)
+        {
+            <div class="row">
+                <div class="card mb-3">
+                    <div class="row g-0" style="max-height:220px;">
+                        <div class="col-md-4 card-image-container">
+                            <a asp-action="Details" asp-route-id="@item.ID" class="card-image-container">
+                                <img src="@Url.Content(!string.IsNullOrEmpty(item.PhotoLocation) ? "~/lib/RecipePictures/" + item.PhotoLocation : "~/lib/Images/NoPhoto.png")" class="img-fluid rounded-start" alt="Picture of the recipe">
+                            </a>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title zomp-green-color">@item.Name</h5>
+                                <dl class ="card-text">
+                                    <dt class="card-text">
+                                        @item.Category.Name
+                                    </dt>
+                                    <dt class="card-text">
+                                        @item.PriceCategory.Name
+                                    </dt>
+                                    <dt class="card-text">
+                                        @item.CookingTime<span>-minute</span>
+                                    </dt>
+                                </dl>
+                                <p class="card-text text-truncate"><small class="text-muted">@item.Instructions</small></p>
+                                <p class="card-text">
+                                    <a class="a-recipe" asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                                    <a class="a-recipe" asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                                    <a class="a-recipe" asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+@*<table class="table">
     <thead>
         <tr>
             <th>
@@ -141,7 +202,7 @@
             }
         }
     </tbody>
-</table>
+</table>*@
 <nav>
     @Html.PagedListPager(Model, page => Url.Action("Index", new { option = option,
     searchParameter = searchParameter,  pageNumber = page, selectedCategories = selectedCategories, selectedPriceCategories = selectedPriceCategories, selectedTags = selectedTags, selectedCookingTime = selectedCookingTime }), new PagedListRenderOptions()
