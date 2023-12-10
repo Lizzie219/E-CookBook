@@ -121,7 +121,7 @@ namespace E_CookBook.Controllers
             string[] lines = processedInput.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
             // Regex pattern to match "Quantity Metric Name"
-            string pattern = @"(\d+\.?\d*)\s+([a-zA-Z]+\.?)\s+(.+)";
+            string pattern = @"(\d+\.?\d*)\s+([a-zA-ZáéíóöőúüűÁÉÍÓÖŐÚÜŰ]+\.?)\s+(.+)";
 
             foreach (string line in lines)
             {
