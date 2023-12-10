@@ -19,7 +19,7 @@ namespace E_CookBook.Controllers
     {
         private readonly TastyDbContext _context;
         private IngredientSpecificationsController ispecController;
-        private readonly string recipePicturesDir = Path.Combine(Directory.GetCurrentDirectory(), "RecipePictures");
+        private readonly string recipePicturesDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "lib", "RecipePictures");
 
         public RecipesController(TastyDbContext context)
         {
@@ -96,7 +96,7 @@ namespace E_CookBook.Controllers
             {
                 return NotFound();
             }
-            
+
             ViewBag.Ingredients = LoadIngredientsDetails((int)id);
             ViewBag.TagList = recipe.Tags != null ? recipe.Tags.Split("|and|", StringSplitOptions.RemoveEmptyEntries).ToList() : null;
             ViewBag.PhotoPath = !string.IsNullOrEmpty(recipe.PhotoLocation) ? "~/lib/RecipePictures/" + recipe.PhotoLocation : "~/lib/Images/NoPhoto.png";
@@ -107,6 +107,7 @@ namespace E_CookBook.Controllers
         {
             List<IngredientViewModel> ingredientViewModels = new List<IngredientViewModel>();
 
+            // Processing incorrectly formatted fractions e.g. 1/2 --> 0.5
             string fractionProcessedInput = Regex.Replace(ingredients, @"(\d+)/(\d+)", m =>
             {
                 double numerator = double.Parse(m.Groups[1].Value);
@@ -116,7 +117,7 @@ namespace E_CookBook.Controllers
             // Insert space between the number and the word if there's none
             string processedInput = Regex.Replace(fractionProcessedInput, @"(\d+\.?\d*)([^\d\s\.])", "$1 $2");
 
-            // Assuming each ingredient is on a new line
+            // Assuming each ingredient is in a new line
             string[] lines = processedInput.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
             // Regex pattern to match "Quantity Metric Name"
@@ -178,6 +179,7 @@ namespace E_CookBook.Controllers
                     // Only one file will be uploaded
                     recipe.PhotoLocation = recipe.ID + "_" + Request.Form.Files[0].FileName;
                     LoadRecipePhoto(recipe.PhotoLocation);
+                    _context.SaveChanges();
                 }
                 #endregion
                 #region Ingredients
@@ -260,6 +262,7 @@ namespace E_CookBook.Controllers
                         // Only one file will be uploaded
                         recipe.PhotoLocation = id + "_" + Request.Form.Files[0].FileName;
                         LoadRecipePhoto(recipe.PhotoLocation);
+                        _context.SaveChanges();
                     }
                     #endregion
 
@@ -332,7 +335,7 @@ namespace E_CookBook.Controllers
             {
                 return NotFound();
             }
-            
+
             ViewBag.Ingredients = LoadIngredientsDetails((int)id);
             ViewBag.TagList = recipe.Tags != null ? recipe.Tags.Split("|and|", StringSplitOptions.RemoveEmptyEntries).ToList() : null;
             ViewBag.PhotoPath = !string.IsNullOrEmpty(recipe.PhotoLocation) ? "~/lib/RecipePictures/" + recipe.PhotoLocation : "~/lib/Images/NoPhoto.png";
@@ -352,6 +355,14 @@ namespace E_CookBook.Controllers
             var recipe = await _context.Recipe.FindAsync(id);
             if (recipe != null)
             {
+                foreach (var ingredientSpec in recipe.Ingredients)
+                {
+                    ispecController.Remove(ingredientSpec.ID);
+                }
+                if (!string.IsNullOrEmpty(recipe.PhotoLocation) && System.IO.File.Exists(Path.Combine(recipePicturesDir, recipe.PhotoLocation)))
+                {
+                    System.IO.File.Delete(Path.Combine(recipePicturesDir, recipe.PhotoLocation));
+                }
                 _context.Recipe.Remove(recipe);
             }
 

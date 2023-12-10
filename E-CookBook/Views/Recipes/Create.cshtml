@@ -134,6 +134,7 @@
             var existingInstructions = @Html.Raw(JsonConvert.SerializeObject(ViewBag.ExistingInstructions));
             if (existingInstructions != null) {
                 document.getElementById("Instructions").value = existingInstructions;
+                resizeInstructionsBox(document.getElementById("Instructions"));
             }
         }
 

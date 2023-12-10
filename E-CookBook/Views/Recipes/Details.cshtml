@@ -18,7 +18,7 @@
                         @Html.DisplayNameFor(model => model.Portion)
                     </div>
                     <div class="col text-end">
-                        @Html.EditorFor(model => model.Portion)
+                        @Html.EditorFor(model => model.Portion, new { htmlAttributes = new { @min = 1 } })
                         <button onclick="resetPortion()">Reset</button>
                     </div>
                 </div>
