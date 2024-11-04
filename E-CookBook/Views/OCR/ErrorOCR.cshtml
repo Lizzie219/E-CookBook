@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "OCR Error";
+}
+
+<div>
+    <label>Ooops, something went wrong</label>
+    <label>@ViewBag.ErrorMessage</label>
+</div>
+<br />
+<div class="container" style="margin-bottom:475px">
+    <div class="row">
+        <div class="col">
+            @Html.ActionLink("OCR", "OCR", "OCR", "", new { @class = "a-recipe"})
+        </div>
+        <div class="col">
+            @Html.ActionLink("Home", "Index", "Home", "", new { @class = "a-recipe"})
+        </div>
+    </div>
+</div>

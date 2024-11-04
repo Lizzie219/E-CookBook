@@ -1,0 +1,242 @@
+﻿@model E_CookBook.Models.Recipe
+
+@{
+    ViewData["Title"] = "Edit";
+    string[] TagList = ViewBag.TagList;
+    List<IngredientViewModel> existingIngredients = (List<IngredientViewModel>)ViewBag.ExistingIngredients;
+}
+
+<h1>Edit a Recipe</h1>
+
+<hr />
+<div class="container">
+    <form asp-action="Edit" enctype="multipart/form-data" autocomplete="off">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="ID" />
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Category.Name" class="control-label"></label>
+                    <select asp-for="CategoryID" class="form-control" asp-items="ViewBag.Categories">
+                        <option value="" disabled>Select an Option</option>
+                    </select>
+                    <span asp-validation-for="CategoryID" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PriceCategory.Name" class="control-label"></label>
+                    <select asp-for="PriceCategoryID" class="form-control" asp-items="ViewBag.PriceCategories">
+                        <option value="" disabled selected>Select an Option</option>
+                    </select>
+                    <span asp-validation-for="PriceCategoryID" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Portion" class="control-label"></label>
+                    <input asp-for="Portion" class="form-control" />
+                    <span asp-validation-for="Portion" class="text-danger"></span>
+                    <div id="portionHelp" class="form-text text-end details-color">Estimated number of adults the recipe serves</div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CookingTime" class="control-label"></label>
+                    <div class="input-group mb-3">
+                        <input asp-for="CookingTime" class="form-control" />
+                        <span class="input-group-text cooking-time-helper">minutes</span>
+                    </div>
+                    <span asp-validation-for="CookingTime" class="text-danger"></span>
+                    <div id="cookingTimeHelp" class="form-text text-end details-color">Cooking time estimate in minutes</div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Source" class="control-label"></label>
+                    <input asp-for="Source" class="form-control" />
+                    <span asp-validation-for="Source" class="text-danger"></span>
+                </div>
+                <div>
+                    <label asp-for="Ingredients" class="control-label"></label>
+                    <input id="IngredientCount" name="IngredientCount" hidden />
+                    <table class="ingredients-table table" id="ingredientsTable">
+                        <tr>
+                            <th>Section</th>
+                            <th>Quantiy</th>
+                            <th>Metric</th>
+                            <th>Name</th>
+                            <th></th>
+                        </tr>
+                    </table>
+                    <div class="form-group text-end">
+                        <button id="addIngrButton" type="button" onclick="addIngredientSpecification()">Add Ingredient</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Instructions" class="control-label"></label>
+                    <textarea asp-for="Instructions" class="form-control" oninput="resizeInstructionsBox(this)"></textarea>
+                    <span asp-validation-for="Instructions" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col col-3">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-12 d-flex justify-content-center">
+                            <img id="recipePhotoDisplay" src="@Url.Content(ViewBag.PhotoPath)" alt="Image of the result" class="recipe-photo-styles" />
+                        </div>
+                    </div>
+                    <label class="control-label">Change the photo</label>
+                    <input id="RecipePhoto" name="RecipePhoto" type="file" accept="image/jpeg, image/png, image/gif" class="form-control" onchange="manageUploadedPhoto(this, event)" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Tags" class="control-label"></label>
+                    <input asp-for="Tags" class="form-control" hidden />
+                    <div class="input-group mb-3">
+                        <input id="tagInput" type="text" class="form-control" placeholder="Add a tag..." aria-describedby="tagButton">
+                        <button type="button" id="tagButton" onclick="tagInputButtonPushed()">Add</button>
+                    </div>
+                    <div id="tagBadgeList">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="form-group col">
+                <input type="submit" value="Save" class="form-submit-input" />
+            </div>
+            <div class="col text-end">
+                <a class="a-recipe" asp-action="Index">Back to List</a>
+            </div>
+        </div>
+        <br />
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("CustomModals");
+    }
+    }
+
+    <script>
+        var ingredientCount = 0;
+        document.loaded = afterLoad();
+
+        $(document).ready(function () {
+            $('#tagInput').autocomplete({
+                source: function (request, response) {
+                    fetchDataforAutocomplete(request.term, 'tagInput').then(data => {
+                        response(data);
+                    });
+                }
+            });
+        });
+
+        function afterLoad() {
+            manageTags();
+            manageIngredients();
+            resizeInstructionsBox(document.getElementById("Instructions"));
+        }
+        
+        // #region Tags
+        function manageTags() {
+            var tags = @Html.Raw(JsonConvert.SerializeObject(TagList));
+            if (tags != null) {
+                for (var i = 0; i < tags.length; i++) {
+                    addTag(tags[i]);
+                }
+            }
+        }
+
+        // #endregion
+        // #region Ingredients
+        function manageIngredients() {
+            var existingIngredientsList = @Html.Raw(JsonConvert.SerializeObject(existingIngredients));
+            var section = "";
+            if (existingIngredientsList != null) {
+                for (var i = 0; i < existingIngredientsList.length; i++) {
+                    addIngredientSpecification();
+                    if (section != existingIngredientsList[i].Section && existingIngredientsList[i].Section != null) {
+                        section = existingIngredientsList[i].Section;
+                        loadIngredientValues(existingIngredientsList[i], section);
+                    }
+                    else {
+                        loadIngredientValues(existingIngredientsList[i], "");
+                    }
+                }
+            }
+        }
+
+        function loadIngredientValues(existingIngredient, section) {
+            loadBaseIngredientValues(existingIngredient, ingredientCount);
+            if (section != "") {
+                document.getElementById("Section_" + ingredientCount.toString()).value = existingIngredient.Section;
+            }
+            document.getElementById("SpecIDHidden_" + ingredientCount.toString()).value = existingIngredient.IngredientSpecificationID;
+        }
+
+        function addIngredientSpecification() {
+            ingredientCount++;
+            document.getElementById("IngredientCount").value = ingredientCount;
+
+            var table = document.getElementById("ingredientsTable");
+            var newRow = table.insertRow();
+
+            var sectionCell = newRow.insertCell(0);
+            var metricCell = newRow.insertCell(1);
+            var metricNameCell = newRow.insertCell(2);
+            var nameCell = newRow.insertCell(3);
+            var deleteCell = newRow.insertCell(4);
+
+            // Ingredient
+            var nameInput = createInput("text", "IngredientName", ingredientCount);
+            nameInput.classList.add("delete-helper");
+
+            // Ingredient Specification ID
+            var specInputHidden = createInput("hidden", "SpecIDHidden", ingredientCount);
+            specInputHidden.value = "-19";   // default
+
+            // delete Button
+            var deleteButton = document.createElement("button");
+            deleteButton.type = "button";
+            deleteButton.classList += "btn-close";
+            deleteButton.addEventListener('click', function () {
+                // hide the row, then delete the Ingredient Specification (if in database) on backend
+                var row = deleteButton.closest('tr');
+
+                var ingredientInput = row.querySelector('.delete-helper');
+                if (ingredientInput) {
+                    ingredientInput.value = "DELETED";
+                }
+
+                row.style.display = 'none';
+            });
+
+            // Add inputs to cells
+            sectionCell.appendChild(createInput("text", "Section", ingredientCount));
+            nameCell.appendChild(specInputHidden);
+            nameCell.appendChild(nameInput);
+            metricCell.appendChild(createInput("number", "Metric", ingredientCount));
+            metricNameCell.appendChild(createInput("text", "MetricName", ingredientCount));
+            deleteCell.appendChild(deleteButton);
+
+            //  add the autocompletes to certain elements
+            $('#IngredientName_' + ingredientCount).autocomplete({
+                source: function (request, response) {
+                    fetchDataforAutocomplete(request.term, 'ingredientName').then(data => {
+                        response(data);
+                    });
+                }
+            });
+
+            $('#MetricName_' + ingredientCount).autocomplete({
+                source: function (request, response) {
+                    fetchDataforAutocomplete(request.term, 'quantityMetric').then(data => {
+                        response(data);
+                    });
+                }
+            });
+        }
+
+         // #endregion
+    </script>

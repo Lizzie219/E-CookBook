@@ -1,0 +1,225 @@
+﻿.badge-background-color {
+    background-color: #4D967A;
+    color: #FFFFF6;
+}
+
+.danger-badge-background-color {
+    background-color: #990603;
+    color: #FFFFF6;
+}
+
+.layout-font-color {
+    color: #FFFFF6 !important;
+}
+
+.layout-dropdown-style {
+    background-color: #4D967A;
+}
+
+.dropdown-item:hover {
+    background-color: #FFFFF6
+}
+
+.home-images {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.home-images-container {
+    position: relative;
+    display: inline-block;
+}
+
+.home-images-text-base {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #482F1D;
+    font-size: 2vw;
+    background-color: #4D967A;
+    text-decoration: none;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.home-images-text-create {
+    top: 50%;
+}
+
+.home-images-find-text {
+    top: 34%;
+}
+
+.home-images-text-base:hover, .penn-red-color {
+    color: #990603 !important;
+}
+
+.recipe-photo-styles {
+    width: 100%;
+    height: 250px;
+    border: 3px solid #482F1D;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    object-fit: contain;
+    object-position: center;
+    background-color: #E5C38A;
+}
+
+.image-placeholder #uploadedImage {
+    width: 100%; /* Ensures the image stretches to the container's width */
+    height: 100%; /* Ensures the image stretches to the container's height */
+    object-fit: contain; /* Resizes the image to fit within the container while maintaining its aspect ratio */
+    object-position: center; /* Aligns the image centrally in the container */
+}
+
+.ingredients-table {
+    border: 2px solid #482F1D;
+}
+
+.details-color, .text-muted {
+    color: #212529 !important;
+}
+
+.zomp-green-color {
+    color: #4D967A;
+}
+
+.form-control::file-selector-button {
+    background-color: #4D967A;
+    color: #FFFFF6;
+    border: 1px solid #4D967A;
+    border-radius: .25rem;
+    padding: .375rem .75rem;
+    margin-right: .375rem;
+    transition: background-color .15s ease-in-out, border-color .15s ease-in-out;
+}
+
+.form-control:hover::file-selector-button {
+    background-color: #FFFFFF !important;
+    border-color: #FFFFFF !important;
+    color: #4D967A !important;
+}
+
+.cooking-time-helper {
+    background-color: white;
+    color: #212529;
+}
+
+.display-label-style {
+    font-size: 25px;
+}
+
+.a-recipe, .a-recipe:active, .a-recipe:visited {
+    background-color: #4D967A;
+    color: #FFFFF6;
+    padding: 5px 12px;
+    border-radius: 12px;
+    text-decoration: none;
+}
+
+    .a-recipe:hover {
+        color: #212529;
+        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+    }
+
+.danger-form-submit-input {
+    background-color: #990603;
+    color: #FFFFF6;
+    padding: 5px 12px;
+    border-radius: 12px;
+}
+
+    .danger-form-submit-input:hover {
+        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+    }
+
+.tags-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 5px normal;
+    max-height: 100%;
+    overflow-y: auto;
+    border: 1px solid #4D967A;
+    padding: 10px;
+}
+
+.card-body {
+    border-color: #4D967A;
+    border-radius: 2px;
+}
+
+/* for Chrome or Safari... */
+.form-range::-webkit-slider-thumb {
+    background: #4D967A;
+}
+/*for Edge*/
+.form-range::-ms-thumb {
+    background: #4D967A;
+}
+
+.form-check-input:checked {
+    background-color: #4D967A;
+    border-color: #4D967A;
+    color: #FFFFF6;
+}
+
+.form-check-input[type="radio"]:checked {
+    background-color: #4D967A;
+    border-color: #4D967A;
+}
+
+    .form-check-input[type="radio"]:checked::before {
+        background-color: #FFFFF6; /* Color of the inner dot */
+    }
+
+.page-item .page-link {
+    background-color: #4D967A;
+    border-color: #4D967A;
+    color: #FFFFF6;
+}
+
+.page-item.active .page-link {
+    background-color: #FFFFF6;
+    border-color: #4D967A;
+    color: #4D967A;
+}
+
+.page-item.disabled .page-link {
+    color: #FFFFF6; 
+    background-color: #E5C38A;
+    border-color: #4D967A;
+}
+
+.page-item:hover .page-link {
+    color: #4D967A; 
+    background-color: #FFFFF6; 
+    border-color: #4D967A;
+}
+.card-image-container {
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #E5C38A;
+}
+
+    .card-image-container img {
+        max-width: 100%;
+        max-height: 100%; 
+        height: auto; 
+        width: auto; 
+        object-fit: contain; 
+    }
+
+.footer {
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    min-height: 50px;
+    background-color: #4D967A;
+    color: #FFFFF6;
+}

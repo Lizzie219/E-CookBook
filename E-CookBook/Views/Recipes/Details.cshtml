@@ -1,0 +1,133 @@
+﻿@model E_CookBook.Models.Recipe
+@using E_CookBook.ViewModels;
+
+@{
+    ViewData["Title"] = "Details";
+    List<IngredientViewModel> Ingredients = ViewBag.Ingredients;
+}
+
+<h1>@Html.DisplayFor(model => model.Name)</h1>
+
+<div>
+    <hr />
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col display-label-style">
+                        @Html.DisplayNameFor(model => model.Portion)
+                    </div>
+                    <div class="col text-end">
+                        @Html.EditorFor(model => model.Portion, new { htmlAttributes = new { @min = 1 } })
+                        <button onclick="resetPortion()">Reset</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="display-label-style">Ingredients</label>
+                    <div class="row">
+                        @foreach (var ingredientSpec in Ingredients)
+                        {
+                            <div class="col-sm-2 details-color">
+                                <label>@ingredientSpec.Section</label>
+                            </div>
+                            <div class="col-sm-10">
+                                <label class="scaling-product">@ingredientSpec.Metric.ToString()</label>
+                                <label>@(ingredientSpec.MetricName + "")</label>
+                                <label>@ingredientSpec.IngredientName</label>
+                            </div>
+                        }
+                    </div>
+                    <div class="text-end">
+                        <a class="text-end a-recipe" asp-action="GenerateShoppingList" asp-route-recipeID="@Model.ID">Generate Shopping list</a>
+                    </div>
+                </div>
+                <div>
+                    <div class="display-label-style">
+                        @Html.DisplayNameFor(model => model.Instructions)
+                    </div>
+                    <div class="details-color">
+                        @Html.DisplayFor(model => model.Instructions)
+                    </div>
+                </div>
+
+            </div>
+            <div class="col col-4">
+                <div class="col-12 d-flex justify-content-center">
+                    <img id="recipePhotoDisplay" src="@Url.Content(ViewBag.PhotoPath)" alt="Image of the result" class="recipe-photo-styles" />
+                </div>
+                <div>
+                    @if (ViewBag.TagList != null)
+                    {
+                        @foreach (var item in ViewBag.TagList)
+                        {
+                            <span class="badge rounded-pill text-bg-primary badge-background-color">@item</span>
+                        }
+                    }
+                </div>
+                <div>
+                    <div class="display-label-style">
+                        @Html.DisplayNameFor(model => model.CookingTime)
+                    </div>
+                    <div class="details-color">
+                        @Html.DisplayFor(model => model.CookingTime)
+                        <span> minutes</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="display-label-style">
+                        @Html.DisplayNameFor(model => model.Category.Name)
+                    </div>
+                    <div class="details-color">
+                        @Html.DisplayFor(model => model.Category.Name)
+                    </div>
+                </div>
+                <div>
+                    <div class="display-label-style">
+                        @Html.DisplayNameFor(model => model.PriceCategory.Name)
+                    </div>
+                    <div class="details-color">
+                        @Html.DisplayFor(model => model.PriceCategory.Name)
+                    </div>
+                </div>
+                <div>
+                    <div class="display-label-style">
+                        @Html.DisplayNameFor(model => model.Source)
+                    </div>
+                    <div class="text-break details-color">
+                        @Html.DisplayFor(model => model.Source)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <a class="a-recipe" asp-action="Edit" asp-route-id="@Model?.ID">Edit</a>
+        </div>
+        <div class="col text-end">
+            <a class="a-recipe" asp-action="Index">Back to List</a>
+        </div>
+    </div>
+</div>
+<script>
+    const initialPortion = @Html.Raw(JsonConvert.SerializeObject(Model?.Portion));
+    const initialIngredientQuantities = @Html.Raw(JsonConvert.SerializeObject(Ingredients?.Select(i => i.Metric)));
+    document.getElementById("Portion").addEventListener('input', (event) => scaling(event.target.value));
+
+    function scaling(multiplier) {
+        setQuantityLabels((multiplier / initialPortion));
+    }
+    function resetPortion() {
+        document.getElementById("Portion").value = initialPortion;
+        setQuantityLabels(1);
+    }
+    function setQuantityLabels(multiplier) {
+        var ingredientQuantites = document.getElementsByClassName("scaling-product");
+        for (var i = 0; i < ingredientQuantites.length; i++) {
+            ingredientQuantites[i].textContent = Math.round((initialIngredientQuantities[i] * multiplier) * 1000) / 1000;
+        }
+    }
+</script>

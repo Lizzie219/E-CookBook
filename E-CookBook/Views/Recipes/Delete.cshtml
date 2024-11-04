@@ -1,0 +1,114 @@
+﻿@model E_CookBook.Models.Recipe
+@using E_CookBook.ViewModels;
+
+@{
+    ViewData["Title"] = "Delete";
+    List<IngredientViewModel> Ingredients = ViewBag.Ingredients;
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to <span class="penn-red-color">delete</span> the recipe of <span class="penn-red-color">@Html.DisplayFor(model => model.Name)</span> ?</h3>
+<div>
+    <hr />
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="display-label-style">
+                        @Html.DisplayNameFor(model => model.Portion)
+                    </div>
+                    <div class="penn-red-color">
+                        @Html.DisplayFor(model => model.Portion)
+                    </div>
+                </div>
+                <div>
+                    <label class="display-label-style">Ingredients</label>
+                    <div class="row">
+                        @foreach (var ingredientSpec in Ingredients)
+                        {
+                            <div class="col-sm-2 penn-red-color">
+                                <label>@ingredientSpec.Section</label>
+                            </div>
+                            <div class="col-sm-10 penn-red-color">
+                                <label class="scaling-product">@ingredientSpec.Metric.ToString()</label>
+                                <label>@(ingredientSpec.MetricName + "")</label>
+                                <label>@ingredientSpec.IngredientName</label>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div>
+                    <div class="display-label-style">
+                        @Html.DisplayNameFor(model => model.Instructions)
+                    </div>
+                    <div class="penn-red-color">
+                        @Html.DisplayFor(model => model.Instructions)
+                    </div>
+                </div>
+
+            </div>
+            <div class="col col-4">
+                <div class="col-12 d-flex justify-content-center">
+                    <img id="recipePhotoDisplay" src="@Url.Content(ViewBag.PhotoPath)" alt="Image of the result" class="recipe-photo-styles" />
+                </div>
+                <div>
+                    @if (ViewBag.TagList != null)
+                    {
+                        @foreach (var item in ViewBag.TagList)
+                        {
+                            <span class="badge rounded-pill text-bg-primary danger-badge-background-color">@item</span>
+                        }
+                    }
+                </div>
+                <div>
+                    <div class="display-label-style">
+                        @Html.DisplayNameFor(model => model.CookingTime)
+                    </div>
+                    <div class="penn-red-color">
+                        @Html.DisplayFor(model => model.CookingTime)
+                        <span> minutes</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="display-label-style">
+                        @Html.DisplayNameFor(model => model.Category.Name)
+                    </div>
+                    <div class="penn-red-color">
+                        @Html.DisplayFor(model => model.Category.Name)
+                    </div>
+                </div>
+                <div>
+                    <div class="display-label-style">
+                        @Html.DisplayNameFor(model => model.PriceCategory.Name)
+                    </div>
+                    <div class="penn-red-color">
+                        @Html.DisplayFor(model => model.PriceCategory.Name)
+                    </div>
+                </div>
+                <div>
+                    <div class="display-label-style">
+                        @Html.DisplayNameFor(model => model.Source)
+                    </div>
+                    <div class="text-break penn-red-color">
+                        @Html.DisplayFor(model => model.Source)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<div class="container">
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="ID" />
+        <div class="row">
+            <div class="col">
+                <input type="submit" value="Delete" class="danger-form-submit-input" />
+            </div>
+            <div class="col text-end">
+                <a class="a-recipe" asp-action="Index">Back to List</a>
+            </div>
+        </div>
+    </form>
+</div>

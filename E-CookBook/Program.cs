@@ -1,7 +1,13 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using E_CookBook.Data;
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<TastyDbContext>(options =>
+    options.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("TastyDbContext") ?? throw new InvalidOperationException("Connection string 'TastyDbContext' not found.")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
